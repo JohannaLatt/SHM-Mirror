@@ -30,7 +30,7 @@ def hello():
     return "Hello World!"
 
 
-@app.route("/Tracking")
+@app.route("/tracking")
 def tracking():
     channel.basic_publish(exchange='mirror',
                       routing_key=MIRROR_KEY.MIRROR_TRACKING_DATA.name,
