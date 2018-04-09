@@ -1,5 +1,6 @@
 from enum import Enum
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 import messaging as Messaging
 from messaging import MSG_FROM_MIRROR_KEYS
 import sys
@@ -56,7 +57,14 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         geometry = app.desktop().availableGeometry()
         geometry.setHeight(geometry.height() - (titleBarHeight*2))
 
+        # Set window background color
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+
         self.setGeometry(geometry)
+        self.showMaximized()
 
     @QtCore.pyqtSlot()
     def on_pushButtonMirrorStarted_clicked(self):
