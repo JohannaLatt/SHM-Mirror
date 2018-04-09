@@ -19,7 +19,11 @@ def consume_server_message(ch, method, properties, body):
     print(" [x] %r:%r" % (method.routing_key, body))
 
 
-def init():
+def init(q):
+    # Save the queue
+    global queue
+    queue = q
+
     # Create a local messaging connection
     Config = configparser.ConfigParser()
     Config.read('./config/mirror_config.ini')
@@ -51,6 +55,17 @@ def start_consuming():
     __channel.start_consuming()
 
 
+def start_sending(queue):
+    while True:
+        item = queue.get()
+        if item is None:
+            continue
+        __channel.basic_publish(exchange='from-mirror',
+                          routing_key=item['key'],
+                          body=item['body'])
+        queue.task_done()
+
+
 def send(key, body):
     if __channel is None:
         init()
@@ -58,6 +73,4 @@ def send(key, body):
     if key not in MSG_FROM_MIRROR_KEYS.__members__:
         print("[error] %r is not a valid message key to send to the server" % key)
     else:
-        __channel.basic_publish(exchange='from-mirror',
-                          routing_key=key,
-                          body=body)
+        queue.put({'key': key, 'body': body})
