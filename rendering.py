@@ -23,39 +23,41 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.sample_tracking_data = open('./data/sample-tracking-data.txt').read().splitlines()
         self.simulation_thread = threading.Thread(target=self.simulate_tracking)
 
+        # Set geometry
+        geometry = app.desktop().availableGeometry()
+        geometry.setHeight(geometry.height())
+        self.setGeometry(geometry)
+
+        # Button Section
+        self.section_button = QtWidgets.QGridLayout()
+
         # Start-Mirror Button
         self.pushButtonStartMirror = QtWidgets.QPushButton(self)
         self.pushButtonStartMirror.setText("Start Mirror")
         self.pushButtonStartMirror.clicked.connect(self.on_pushButtonMirrorStarted_clicked)
+        self.section_button.addWidget(self.pushButtonStartMirror, 0, 0)
 
         # Simulate Tracking Button
         self.pushButtonSimulateTracking = QtWidgets.QPushButton(self)
         self.pushButtonSimulateTracking.setText("Simulate Tracking")
         self.pushButtonSimulateTracking.clicked.connect(self.on_pushButtonSimulateTracking_clicked)
+        self.section_button.addWidget(self.pushButtonSimulateTracking, 1, 0)
 
         self.pushButtonStopSimulating = QtWidgets.QPushButton(self)
         self.pushButtonStopSimulating.setText("Stop Simulating Tracking")
         self.pushButtonStopSimulating.clicked.connect(self.on_pushButtonStopSimulating_clicked)
+        self.section_button.addWidget(self.pushButtonStopSimulating, 1, 1)
 
         # Close Button
         self.pushButtonClose = QtWidgets.QPushButton(self)
         self.pushButtonClose.setText("Close")
         self.pushButtonClose.clicked.connect(self.on_pushButtonClose_clicked)
+        self.section_button.addWidget(self.pushButtonClose, 0, 1)
 
-        self.layoutVertical = QtWidgets.QVBoxLayout(self)
-        self.layoutVertical.addWidget(self.pushButtonStartMirror)
-        self.layoutVertical.addWidget(self.pushButtonSimulateTracking)
-        self.layoutVertical.addWidget(self.pushButtonStopSimulating)
-        self.layoutVertical.addWidget(self.pushButtonClose)
-
-        titleBarHeight = self.style().pixelMetric(
-            QtWidgets.QStyle.PM_TitleBarHeight,
-            QtWidgets.QStyleOptionTitleBar(),
-            self
-        )
-
-        geometry = app.desktop().availableGeometry()
-        geometry.setHeight(geometry.height() - (titleBarHeight*2))
+        # Overall Layout
+        self.layoutVertical = QtWidgets.QGridLayout(self)
+        self.layoutVertical.addLayout(self.section_button, 2, 1)
+        self.evenly_space_grid(self.layoutVertical, 3, 3, geometry)
 
         # Set window background color
         self.setAutoFillBackground(True)
@@ -63,8 +65,9 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         p.setColor(self.backgroundRole(), Qt.black)
         self.setPalette(p)
 
-        self.setGeometry(geometry)
+        # General settings
         self.showMaximized()
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
     @QtCore.pyqtSlot()
     def on_pushButtonMirrorStarted_clicked(self):
@@ -91,6 +94,11 @@ class HealthMirrorGUI(QtWidgets.QWidget):
                 time.sleep(.5)
         self.stop_simulating.clear()
 
+    def evenly_space_grid(self, layout, cols, rows, geometry):
+        for col in range(cols):
+            layout.setColumnStretch(col, geometry.width() / cols)
+        for row in range(rows):
+            layout.setRowStretch(row, geometry.height() / rows)
 
 def init_gui():
     app = QtWidgets.QApplication(sys.argv)
