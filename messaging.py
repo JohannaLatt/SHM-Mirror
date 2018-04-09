@@ -1,6 +1,7 @@
 import pika
 from enum import Enum
 import configparser
+import queue
 
 
 class MSG_FROM_MIRROR_KEYS(Enum):
@@ -19,10 +20,10 @@ def consume_server_message(ch, method, properties, body):
     print(" [x] %r:%r" % (method.routing_key, body))
 
 
-def init(q):
+def init():
     # Save the queue
     global queue
-    queue = q
+    queue = queue.Queue()
 
     # Create a local messaging connection
     Config = configparser.ConfigParser()
@@ -55,14 +56,17 @@ def start_consuming():
     __channel.start_consuming()
 
 
-def start_sending(queue):
+def start_sending():
     while True:
         item = queue.get()
         if item is None:
             continue
-        __channel.basic_publish(exchange='from-mirror',
-                          routing_key=item['key'],
-                          body=item['body'])
+        try:
+            __channel.basic_publish(exchange='from-mirror',
+                              routing_key=item['key'],
+                              body=item['body'])
+        except pika.exceptions.ConnectionClosed as cce:
+            print('[error] %r' % cce)
         queue.task_done()
 
 

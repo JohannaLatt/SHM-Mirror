@@ -81,6 +81,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot()
     def on_pushButtonClose_clicked(self):
+        self.stop_simulating.set()
         QtWidgets.QApplication.instance().quit()
 
     def simulate_tracking(self):
