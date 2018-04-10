@@ -12,12 +12,13 @@ class MSG_FROM_MIRROR_KEYS(Enum):
 
 
 class MSG_TO_MIRROR_KEYS(Enum):
-    TEXT = 1
+    TEXT = 1,
+    SKELETON = 2
 
 
 # Callback for consuming incoming messages
 def consume_server_message(ch, method, properties, body):
-    print(" [x] %r:%r" % (method.routing_key, body))
+    print(" [x] Received %r:%r" % (method.routing_key, body))
 
 
 def init():
