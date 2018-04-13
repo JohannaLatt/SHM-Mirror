@@ -54,9 +54,13 @@ def init():
 
 
 def start_consuming():
-    __channel.start_consuming()
+    try:
+        __channel.start_consuming()
+    except pika.exceptions.ConnectionClosed as cce:
+        print('[error] %r' % cce)
 
 
+# Threadsafe sending of messages
 def start_sending():
     while True:
         item = queue.get()
@@ -66,6 +70,7 @@ def start_sending():
             __channel.basic_publish(exchange='from-mirror',
                               routing_key=item['key'],
                               body=item['body'])
+            print("[info] Sent {}: {}".format(item['key'], item['body'][0:50]))
         except pika.exceptions.ConnectionClosed as cce:
             print('[error] %r' % cce)
         queue.task_done()

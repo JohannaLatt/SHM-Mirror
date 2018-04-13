@@ -28,11 +28,6 @@ class HealthMirrorGUI(QtWidgets.QWidget):
     def __init__(self, app, parent=None):
         super(HealthMirrorGUI, self).__init__(parent)
 
-        # Sample data
-        self.stop_simulating = threading.Event()
-        self.sample_tracking_data = open('./data/sample-tracking-data.txt').read().splitlines()
-        self.simulation_thread = threading.Thread(target=self.simulate_tracking)
-
         # Set geometry
         geometry = app.desktop().availableGeometry()
         geometry.setHeight(geometry.height())
@@ -72,18 +67,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_READY.name, '')
 
     @QtCore.pyqtSlot()
-    def on_pushButtonSimulateTracking_clicked(self):
-        if self.stop_simulating is not None:
-            Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_TRACKING_STARTED.name, '')
-            self.simulation_thread.start()
-
-    @QtCore.pyqtSlot()
-    def on_pushButtonStopSimulating_clicked(self):
-        self.stop_simulating.set()
-
-    @QtCore.pyqtSlot()
     def on_pushButtonClose_clicked(self):
-        self.stop_simulating.set()
         QtWidgets.QApplication.instance().quit()
 
     def simulate_tracking(self):
@@ -107,17 +91,6 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.pushButtonStartMirror.setText("Start Mirror")
         self.pushButtonStartMirror.clicked.connect(self.on_pushButtonMirrorStarted_clicked)
         self.section_button.addWidget(self.pushButtonStartMirror, 0, 0)
-
-        # Simulate Tracking Button
-        self.pushButtonSimulateTracking = QtWidgets.QPushButton(self)
-        self.pushButtonSimulateTracking.setText("Simulate Tracking")
-        self.pushButtonSimulateTracking.clicked.connect(self.on_pushButtonSimulateTracking_clicked)
-        self.section_button.addWidget(self.pushButtonSimulateTracking, 1, 0)
-
-        self.pushButtonStopSimulating = QtWidgets.QPushButton(self)
-        self.pushButtonStopSimulating.setText("Stop Simulating Tracking")
-        self.pushButtonStopSimulating.clicked.connect(self.on_pushButtonStopSimulating_clicked)
-        self.section_button.addWidget(self.pushButtonStopSimulating, 1, 1)
 
         # Close Button
         self.pushButtonClose = QtWidgets.QPushButton(self)
