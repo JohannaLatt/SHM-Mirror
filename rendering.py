@@ -20,7 +20,7 @@ import random
 
 class VIEWS(Enum):
     TEXT = 1
-    SKELETON = 2
+    RENDER_SKELETON = 2
 
 
 class HealthMirrorGUI(QtWidgets.QWidget):
@@ -99,6 +99,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.section_button.addWidget(self.pushButtonClose, 0, 1)
 
     def render_skeleton_data(self, data):
+        print('Rendering {}'.format(data))
         #self.axes.plot(x_pair, y_pair, zs=z_pair, linewidth=3)
         pass
 
@@ -107,6 +108,7 @@ def init_gui():
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Smart Health Mirror')
 
+    global main
     main = HealthMirrorGUI(app)
     main.show()
 
@@ -116,7 +118,10 @@ def init_gui():
 def render(view, data):
     if view == VIEWS.TEXT:
         pass
-    elif view == VIEWS.SKELETON:
-        pass
+    elif view == VIEWS.RENDER_SKELETON.name:
+        if main:
+            main.render_skeleton_data(data)
+        else:
+            print('[Rendering][warning] Message discarded, rendering not initialized yet')
     else:
-        print('[warning] %r is not a suported view' % view)
+        print('[Rendering][warning] %r is not a suported view' % view)

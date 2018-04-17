@@ -13,15 +13,19 @@ class MSG_FROM_MIRROR_KEYS(Enum):
 
 class MSG_TO_MIRROR_KEYS(Enum):
     TEXT = 1,
-    SKELETON = 2
+    RENDER_SKELETON = 2
 
 
 # Callback for consuming incoming messages
 def consume_server_message(ch, method, properties, body):
-    print(" [x] Received %r:%r" % (method.routing_key, body))
+    print("[Messaging][info] Received %r:%r" % (method.routing_key, body[0:20]))
+    rendering.render(method.routing_key, body)
 
 
-def init():
+def init(Rendering):
+    global rendering
+    rendering = Rendering
+
     # Save the queue
     global queue
     queue = queue.Queue()
@@ -70,9 +74,9 @@ def start_sending():
             __channel.basic_publish(exchange='from-mirror',
                               routing_key=item['key'],
                               body=item['body'])
-            print("[info] Sent {}: {}".format(item['key'], item['body'][0:50]))
+            print("[Messaging][info] Sent {}: {}".format(item['key'], item['body'][0:50]))
         except pika.exceptions.ConnectionClosed as cce:
-            print('[error] %r' % cce)
+            print('[Messaging]error] %r' % cce)
         queue.task_done()
 
 
@@ -81,6 +85,6 @@ def send(key, body):
         init()
 
     if key not in MSG_FROM_MIRROR_KEYS.__members__:
-        print("[error] %r is not a valid message key to send to the server" % key)
+        print("[Messaging][error] %r is not a valid message key to send to the server" % key)
     else:
         queue.put({'key': key, 'body': body})
