@@ -42,6 +42,9 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.axes.set_ylim([-900, 600])
         self.axes.set_autoscale_on(False)
 
+        self.axes.set_facecolor('black')
+        fig.patch.set_facecolor('black')
+
         self.skeleton_canvas = FigureCanvas(fig)
         FigureCanvas.updateGeometry(self)
         self.skeleton_canvas.draw()
@@ -107,7 +110,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
             if len(pair) == 2:
                 x_from_to = (float(pair[0][0]), float(pair[0][1]))
                 y_from_to = (float(pair[1][0]), float(pair[1][1]))
-                self.axes.plot(x_from_to, y_from_to, 'k-', lw=2)
+                self.axes.plot(x_from_to, y_from_to, 'w-', lw=2)
 
                 # Enforcing fixes axes
                 self.axes.set_xlim([-200, 700])

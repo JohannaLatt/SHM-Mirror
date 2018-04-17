@@ -18,7 +18,7 @@ class MSG_TO_MIRROR_KEYS(Enum):
 
 # Callback for consuming incoming messages
 def consume_server_message(ch, method, properties, body):
-    print("[Messaging][info] Received %r:%r" % (method.routing_key, body[0:20]))
+    print("[Messaging][info] Received {}:{}...".format(method.routing_key, body[0:20]))
     rendering.render(method.routing_key, body)
 
 
