@@ -38,27 +38,12 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         # Skeleton visualization
         fig = Figure(figsize=(6, 5), dpi=100)
         self.axes = fig.add_subplot(111)
-        self.axes.set_xlim([-200, 300])
+        self.axes.set_xlim([-200, 700])
         self.axes.set_ylim([-900, 600])
+        self.axes.set_autoscale_on(False)
+
         self.skeleton_canvas = FigureCanvas(fig)
         FigureCanvas.updateGeometry(self)
-
-        #data = [random.random() for i in range(25)]
-        #self.axes.plot(data, 'r-')
-
-        data = [[["20.8", "496.0"], ["22.0", "295.0"]], [["22.0", "295.0"], ["22.6", "96.2"]], [["22.6", "96.2"], ["22.6", "96.2"]], [["-118.2", "294.6"], ["22.0", "295.0"]], [["-170.8", "18.3"], ["-118.2", "294.6"]], [["162.2", "295.4"], ["22.0", "295.0"]], [["210.5", "13.3"], ["162.2", "295.4"]], [["-69.6", "-106.3"], ["22.6", "96.2"]], [["-85.3", "-503.4"], ["-69.6", "-106.3"]], [["113.4", "-105.9"], ["22.6", "96.2"]], [["119.3", "-503.3"], ["113.4", "-105.9"]], [["-178.8", "-252.1"], ["-170.8", "18.3"]], [["196.3", "-260.8"], ["210.5", "13.3"]], [["-62.4", "-865.5"], ["-85.3", "-503.4"]]]
-        self.axes.plot((20, 22), (496, 295), 'k-', lw=2)
-        #for pair in data:
-        #    print('Pair {}'.format(str(pair)))
-        #        if len(pair) == 2:
-        #        self.axes.plot(pair[0], pair[1], 'k-', lw=2)
-        #    else:
-        #        print('Invalid pair:{}'.format(str(pair)))
-
-        self.axes.set_title('axes title')
-        self.axes.set_xlabel('xlabel')
-        self.axes.set_ylabel('ylabel')
-
         self.skeleton_canvas.draw()
 
         # Overall Layout
@@ -116,16 +101,17 @@ class HealthMirrorGUI(QtWidgets.QWidget):
     def render_skeleton_data(self, data_str):
         self.axes.clear()
 
-        print('Rendering {}'.format(data_str))
         data = json.loads(data_str)
 
         for pair in data:
-            print('Pair {}'.format(str(pair)))
             if len(pair) == 2:
-                x_from_to = (float(pair[0][0]), float(pair[1][0]))
+                x_from_to = (float(pair[0][0]), float(pair[0][1]))
                 y_from_to = (float(pair[1][0]), float(pair[1][1]))
-                print('Plotting x: {}, y: {}'.format(x_from_to, y_from_to))
                 self.axes.plot(x_from_to, y_from_to, 'k-', lw=2)
+
+                # Enforcing fixes axes
+                self.axes.set_xlim([-200, 700])
+                self.axes.set_ylim([-900, 600])
             else:
                 print('Invalid pair:{}'.format(str(pair)))
 
