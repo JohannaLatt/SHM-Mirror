@@ -1,11 +1,17 @@
-import _thread
+import threading
+
 import messaging as Messaging
 import rendering as Rendering
 
 
 Messaging.init(Rendering)
 
-_thread.start_new_thread(Messaging.start_consuming, ())
-_thread.start_new_thread(Messaging.start_sending, ())
+thread = threading.Thread(target=Messaging.start_consuming)
+thread.daemon = True
+thread.start()
+
+thread = threading.Thread(target=Messaging.start_sending)
+thread.daemon = True
+thread.start()
 
 Rendering.init_gui()
