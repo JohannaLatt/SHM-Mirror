@@ -1,4 +1,4 @@
-from enum import Enum
+from utils.enums import MSG_TO_MIRROR_KEYS
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
@@ -15,11 +15,6 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-
-
-class VIEWS(Enum):
-    TEXT = 1
-    RENDER_SKELETON = 2
 
 
 class HealthMirrorGUI(QtWidgets.QWidget):
@@ -42,7 +37,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.axes.set_ylim([-1100, 600])
         self.axes.set_autoscale_on(False)
 
-        self.axes.set_facecolor('grey')
+        self.axes.set_facecolor('black')
         fig.patch.set_facecolor('black')
 
         self.skeleton_canvas = FigureCanvas(fig)
@@ -120,6 +115,10 @@ class HealthMirrorGUI(QtWidgets.QWidget):
 
         self.skeleton_canvas.draw()
 
+    def clear_skeleton(self):
+        self.axes.clear()
+        self.skeleton_canvas.draw()
+
 
 def init_gui():
     print('[Rendering][info] Initializing GUI')
@@ -134,14 +133,16 @@ def init_gui():
 
 
 def render(view, data):
-    if view == VIEWS.TEXT:
-        pass
-    elif view == VIEWS.RENDER_SKELETON.name:
-        try:
-            gui
-        except NameError:
-            print('[Rendering][warning] Message discarded, rendering not initialized yet')
-        else:
-            gui.render_skeleton_data(data)
+    try:
+        gui
+    except NameError:
+        print('[Rendering][warning] Message discarded, rendering not initialized yet')
     else:
-        print('[Rendering][warning] %r is not a suported view' % view)
+        if view == MSG_TO_MIRROR_KEYS.TEXT.name:
+            pass
+        if view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
+            gui.clear_skeleton()
+        elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
+            gui.render_skeleton_data(data)
+        else:
+            print('[Rendering][warning] %r is not a suported view' % view)

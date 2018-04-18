@@ -1,25 +1,17 @@
+from utils.enums import MSG_FROM_MIRROR_KEYS
+from utils.enums import MSG_TO_MIRROR_KEYS
+
 from amqpstorm import Connection
-from enum import Enum
+
 import configparser
 import queue
 
 
-class MSG_FROM_MIRROR_KEYS(Enum):
-    MIRROR_READY = 1
-    MIRROR_TRACKING_STARTED = 2
-    MIRROR_TRACKING_DATA = 3
-    MIRROR_TRACKING_LOST = 4
-
-
-class MSG_TO_MIRROR_KEYS(Enum):
-    TEXT = 1,
-    RENDER_SKELETON = 2
-
-
 # Callback for consuming incoming messages
 def consume_server_message(message):
-    print("[Messaging][info] Received {}:{}...".format(message.method['routing_key'], message.body[0:20]))
-    rendering.render(message.method['routing_key'], message.body)
+    # print("[Messaging][info] Received {}:{}...".format(message.method['routing_key'], message.body[0:20]))
+    print("Message ID {}".format(message.delivery_tag))
+    #rendering.render(message.method['routing_key'], message.body)
 
 
 def init(Rendering):
