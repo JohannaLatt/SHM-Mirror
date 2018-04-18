@@ -1,7 +1,13 @@
 from utils.enums import MSG_TO_MIRROR_KEYS
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QPoint, QSize, Qt
+from PyQt5.QtWidgets import QOpenGLWidget
+from PyQt5.QtGui import QColor
+
+from OpenGL.GL import *
+
+import numpy as np
 
 import json
 
@@ -9,12 +15,6 @@ import messaging as Messaging
 from messaging import MSG_FROM_MIRROR_KEYS
 import sys
 import time
-
-import matplotlib as mpl
-mpl.use('TkAgg')
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
 
 
 class HealthMirrorGUI(QtWidgets.QWidget):
@@ -31,24 +31,14 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.add_buttons()
 
         # Skeleton visualization
-        fig = Figure(figsize=(7, 4), dpi=100)
-        self.axes = fig.add_subplot(111)
-        self.axes.set_xlim([-200, 700])
-        self.axes.set_ylim([-1100, 600])
-        self.axes.set_autoscale_on(False)
-
-        self.axes.set_facecolor('black')
-        fig.patch.set_facecolor('black')
-
-        self.skeleton_canvas = FigureCanvas(fig)
-        FigureCanvas.updateGeometry(self)
-        self.skeleton_canvas.draw()
+        self.skeletonWidget = SkeletonGLWidget()
 
         # Overall Layout
         self.layoutVertical = QtWidgets.QGridLayout(self)
         self.evenly_space_grid(self.layoutVertical, 3, 3, geometry)
         self.layoutVertical.addLayout(self.section_button, 2, 1)
-        self.layoutVertical.addWidget(self.skeleton_canvas, 1, 1)
+        self.layoutVertical.addWidget(self.skeletonWidget, 1, 1)
+
 
         # Set window background color
         self.setAutoFillBackground(True)
@@ -118,6 +108,160 @@ class HealthMirrorGUI(QtWidgets.QWidget):
     def clear_skeleton(self):
         self.axes.clear()
         self.skeleton_canvas.draw()
+
+
+class SkeletonGLWidget(QOpenGLWidget):
+
+    joint_data = []
+
+    def __init__(self, parent=None):
+        super(SkeletonGLWidget, self).__init__(parent)
+
+        self.skeleton = 0
+        self.jointColor = QColor.fromCmykF(0.0, 0.0, 0.0, 0.0)
+
+    def minimumSizeHint(self):
+        return QSize(50, 50)
+
+    def sizeHint(self):
+        return QSize(400, 400)
+
+    def initializeGL(self):
+        self.gl = self.context().versionFunctions()
+        self.gl.initializeOpenGLFunctions()
+
+        self.setClearColor(QColor.fromCmykF(1.0, 1.0, 1.0, 0.0))
+        self.gl.glShadeModel(self.gl.GL_FLAT)
+        self.gl.glEnable(self.gl.GL_DEPTH_TEST)
+        self.gl.glEnable(self.gl.GL_CULL_FACE)
+
+        #self.vertices = [0.0, 1.0, 0.0,  0.0, 0.0, 0.0,  1.0, 1.0, 0.0]
+        self.vertices  = np.array([0.0, 1.0, 0.0,
+                        0.0, 0.0, 0.0,
+                        1.0, 1.0, 0.0], dtype=np.float32)
+        self.vbo = self.gl.glGenBuffers (1)
+        self.gl.glBindBuffer(self.gl.GL_ARRAY_BUFFER, self.vbo)
+        #self.gl.glBufferData (self.gl.GL_ARRAY_BUFFER, len(self.vertices)*4, np.array (self.vertices, dtype="float32"), self.gl.GL_STATIC_DRAW)
+        self.gl.glBufferData (self.gl.GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, self.gl.GL_STATIC_DRAW)
+
+
+    def paintGL(self):
+        self.gl.glClear(
+                self.gl.GL_COLOR_BUFFER_BIT | self.gl.GL_DEPTH_BUFFER_BIT)
+        self.gl.glLoadIdentity()
+        self.gl.glTranslated(0.0, 0.0, -10.0)
+        # self.gl.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
+        # self.gl.glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
+        # self.gl.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
+        # self.gl.glCallList(self.makeSkeleton())
+        self.makeSkeleton()
+
+    '''def resizeGL(self, width, height):
+        side = min(width, height)
+        if side < 0:
+            return
+
+        self.gl.glViewport((width - side) // 2, (height - side) // 2, side,
+                side)
+
+        self.gl.glMatrixMode(self.gl.GL_PROJECTION)
+        self.gl.glLoadIdentity()
+        self.gl.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
+        self.gl.glMatrixMode(self.gl.GL_MODELVIEW) '''
+
+    def makeSkeleton(self):
+        self.gl.glBindBuffer(self.gl.GL_ARRAY_BUFFER, self.vbo)
+        self.gl.glVertexPointer(3, self.gl.GL_FLOAT, 0, None)
+
+        self.gl.glDrawArrays(self.gl.GL_TRIANGLES, 0, 3)
+
+        '''genList = self.gl.glGenLists(1)
+        self.gl.glNewList(genList, self.gl.GL_COMPILE)
+
+        self.gl.glBegin(self.gl.GL_LINES)
+
+        for joint in joint_data:
+
+
+        x1 = +0.06
+        y1 = -0.14
+        x2 = +0.14
+        y2 = -0.06
+        x3 = +0.08
+        y3 = +0.00
+        x4 = +0.30
+        y4 = +0.22
+
+        self.quad(x1, y1, x2, y2, y2, x2, y1, x1)
+        self.quad(x3, y3, x4, y4, y4, x4, y3, x3)
+
+        self.extrude(x1, y1, x2, y2)
+        self.extrude(x2, y2, y2, x2)
+        self.extrude(y2, x2, y1, x1)
+        self.extrude(y1, x1, x1, y1)
+        self.extrude(x3, y3, x4, y4)
+        self.extrude(x4, y4, y4, x4)
+        self.extrude(y4, x4, y3, x3)
+
+        NumSectors = 200
+
+        for i in range(NumSectors):
+            angle1 = (i * 2 * math.pi) / NumSectors
+            x5 = 0.30 * math.sin(angle1)
+            y5 = 0.30 * math.cos(angle1)
+            x6 = 0.20 * math.sin(angle1)
+            y6 = 0.20 * math.cos(angle1)
+
+            angle2 = ((i + 1) * 2 * math.pi) / NumSectors
+            x7 = 0.20 * math.sin(angle2)
+            y7 = 0.20 * math.cos(angle2)
+            x8 = 0.30 * math.sin(angle2)
+            y8 = 0.30 * math.cos(angle2)
+
+            self.quad(x5, y5, x6, y6, x7, y7, x8, y8)
+
+            self.extrude(x6, y6, x7, y7)
+            self.extrude(x8, y8, x5, y5)
+
+        self.gl.glEnd()
+        self.gl.glEndList()
+
+        return genList'''
+
+    def quad(self, x1, y1, x2, y2, x3, y3, x4, y4):
+        self.setColor(self.trolltechGreen)
+
+        self.gl.glVertex3d(x1, y1, -0.05)
+        self.gl.glVertex3d(x2, y2, -0.05)
+        self.gl.glVertex3d(x3, y3, -0.05)
+        self.gl.glVertex3d(x4, y4, -0.05)
+
+        self.gl.glVertex3d(x4, y4, +0.05)
+        self.gl.glVertex3d(x3, y3, +0.05)
+        self.gl.glVertex3d(x2, y2, +0.05)
+        self.gl.glVertex3d(x1, y1, +0.05)
+
+    def extrude(self, x1, y1, x2, y2):
+        self.setColor(self.trolltechGreen.darker(250 + int(100 * x1)))
+
+        self.gl.glVertex3d(x1, y1, +0.05)
+        self.gl.glVertex3d(x2, y2, +0.05)
+        self.gl.glVertex3d(x2, y2, -0.05)
+        self.gl.glVertex3d(x1, y1, -0.05)
+
+    def normalizeAngle(self, angle):
+        while angle < 0:
+            angle += 360 * 16
+        while angle > 360 * 16:
+            angle -= 360 * 16
+        return angle
+
+    def setClearColor(self, c):
+        self.gl.glClearColor(c.redF(), c.greenF(), c.blueF(), c.alphaF())
+
+    def setColor(self, c):
+        self.gl.glColor4f(c.redF(), c.greenF(), c.blueF(), c.alphaF())
+
 
 
 def init_gui():
