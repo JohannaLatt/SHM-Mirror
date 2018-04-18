@@ -36,13 +36,13 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.add_buttons()
 
         # Skeleton visualization
-        fig = Figure(figsize=(6, 5), dpi=100)
+        fig = Figure(figsize=(7, 4), dpi=100)
         self.axes = fig.add_subplot(111)
         self.axes.set_xlim([-200, 700])
-        self.axes.set_ylim([-900, 600])
+        self.axes.set_ylim([-1100, 600])
         self.axes.set_autoscale_on(False)
 
-        self.axes.set_facecolor('black')
+        self.axes.set_facecolor('grey')
         fig.patch.set_facecolor('black')
 
         self.skeleton_canvas = FigureCanvas(fig)
@@ -113,8 +113,8 @@ class HealthMirrorGUI(QtWidgets.QWidget):
                 self.axes.plot(x_from_to, y_from_to, 'w-', lw=2)
 
                 # Enforcing fixes axes
-                self.axes.set_xlim([-200, 700])
-                self.axes.set_ylim([-900, 600])
+                self.axes.set_xlim([-1100, 1300])
+                self.axes.set_ylim([-1100, 800])
             else:
                 print('Invalid pair:{}'.format(str(pair)))
 
