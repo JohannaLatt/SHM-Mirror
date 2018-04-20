@@ -5,7 +5,7 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QOpenGLWidget
 from PyQt5.QtGui import QColor
 
-from OpenGL.GLUT import *
+from OpenGL.GLUT import glutInit, glutInitDisplayMode, glutSolidSphere, GLUT_RGBA, GLUT_DOUBLE, GLUT_DEPTH
 
 import json
 
@@ -87,8 +87,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.skeletonWidget.setJointData(json.loads(data_str))
 
     def clear_skeleton(self):
-        self.axes.clear()
-        self.skeleton_canvas.draw()
+        self.skeletonWidget.clear()
 
 
 class SkeletonGLWidget(QOpenGLWidget):
@@ -111,9 +110,6 @@ class SkeletonGLWidget(QOpenGLWidget):
     def initializeGL(self):
         self.gl = self.context().versionFunctions()
         self.gl.initializeOpenGLFunctions()
-
-        glutInit(sys.argv)
-        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
 
         self.setClearColor(QColor.fromCmykF(1.0, 1.0, 1.0, 0.0))
         self.gl.glShadeModel(self.gl.GL_FLAT)
@@ -185,6 +181,10 @@ class SkeletonGLWidget(QOpenGLWidget):
             joint[1][1] = float(joint[1][1])
             joint[1][2] = float(joint[1][2]) - 2000
 
+        self.update()
+
+    def clear(self):
+        self.joint_data = []
         self.update()
 
 
