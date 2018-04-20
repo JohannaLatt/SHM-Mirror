@@ -1,18 +1,14 @@
-from utils.enums import MSG_TO_MIRROR_KEYS
+from utils.enums import MSG_TO_MIRROR_KEYS, MSG_FROM_MIRROR_KEYS
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QOpenGLWidget
 from PyQt5.QtGui import QColor
 
-from OpenGL.GLUT import glutInit, glutInitDisplayMode, glutSolidSphere, GLUT_RGBA, GLUT_DOUBLE, GLUT_DEPTH
+from OpenGL.GLUT import glutSolidSphere
 
 import json
-
-import messaging as Messaging
-from messaging import MSG_FROM_MIRROR_KEYS
 import sys
-import time
 
 
 class HealthMirrorGUI(QtWidgets.QWidget):
@@ -35,7 +31,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.layoutVertical = QtWidgets.QGridLayout(self)
         self.evenly_space_grid(self.layoutVertical, 3, 3, geometry)
         self.layoutVertical.addLayout(self.section_button, 2, 1)
-        self.layoutVertical.addWidget(self.skeletonWidget, 1, 1)
+        self.layoutVertical.addWidget(self.skeletonWidget, 0, 2)
 
         # Set window background color
         self.setAutoFillBackground(True)
@@ -48,19 +44,8 @@ class HealthMirrorGUI(QtWidgets.QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
 
     @QtCore.pyqtSlot()
-    def on_pushButtonMirrorStarted_clicked(self):
-        Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_READY.name, '')
-
-    @QtCore.pyqtSlot()
     def on_pushButtonClose_clicked(self):
         QtWidgets.QApplication.instance().quit()
-
-    def simulate_tracking(self):
-        for tracking_data_item in self.sample_tracking_data:
-            if not self.stop_simulating.is_set():
-                Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_TRACKING_DATA.name, tracking_data_item)
-                time.sleep(.5)
-        self.stop_simulating.clear()
 
     def evenly_space_grid(self, layout, cols, rows, geometry):
         for col in range(cols):
@@ -70,12 +55,6 @@ class HealthMirrorGUI(QtWidgets.QWidget):
 
     def add_buttons(self):
         self.section_button = QtWidgets.QGridLayout()
-
-        # Start-Mirror Button
-        self.pushButtonStartMirror = QtWidgets.QPushButton(self)
-        self.pushButtonStartMirror.setText("Start Mirror")
-        self.pushButtonStartMirror.clicked.connect(self.on_pushButtonMirrorStarted_clicked)
-        self.section_button.addWidget(self.pushButtonStartMirror, 0, 0)
 
         # Close Button
         self.pushButtonClose = QtWidgets.QPushButton(self)
@@ -188,7 +167,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         self.update()
 
 
-def init_gui():
+def init_gui(Messaging):
     print('[Rendering][info] Initializing GUI')
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Smart Health Mirror')
@@ -196,6 +175,8 @@ def init_gui():
     global gui
     gui = HealthMirrorGUI(app)
     gui.show()
+
+    Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_READY.name, '')
 
     sys.exit(app.exec_())
 
@@ -207,7 +188,7 @@ def render(view, data):
         print('[Rendering][warning] Message discarded, rendering not initialized yet')
     else:
         if view == MSG_TO_MIRROR_KEYS.TEXT.name:
-            print(data)
+            print("[TEXT] {}".format(data))
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
