@@ -10,8 +10,7 @@ import queue
 # Callback for consuming incoming messages
 def consume_server_message(message):
     # print("[Messaging][info] Received {}:{}...".format(message.method['routing_key'], message.body[0:20]))
-    print("Message ID {}".format(message.delivery_tag))
-    #rendering.render(message.method['routing_key'], message.body)
+    rendering.render(message.method['routing_key'], message.body)
 
 
 def init(Rendering):
