@@ -14,7 +14,7 @@ class HealthMirrorGUI(QtWidgets.QWidget):
     def __init__(self, app, parent=None):
         super(HealthMirrorGUI, self).__init__(parent)
 
-        self.static_text_views = {}
+        self.static_text_views = [AnimationLabel(), AnimationLabel(), AnimationLabel(), AnimationLabel(), AnimationLabel()]
         self.dynamic_text_views = {}
 
         # Set geometry
@@ -27,10 +27,6 @@ class HealthMirrorGUI(QtWidgets.QWidget):
 
         # Skeleton visualization
         self.skeletonWidget = SkeletonGLWidget()
-
-        # Initialize statuc Text-views (invisible for now)
-        for text_position in STATIC_TEXT_POSITIONS:
-            self.static_text_views[text_position] = AnimationLabel()
 
         # Overall Layout
         self.layoutVertical = QtWidgets.QGridLayout(self)
@@ -73,11 +69,11 @@ class HealthMirrorGUI(QtWidgets.QWidget):
     def clear_skeleton(self):
         self.skeletonWidget.clear()
 
-    def show_static_text(self, text, positioning='center'):
+    def show_static_text(self, text, positioning=1):
         # Check if there already is text at that position
-        if self.text and self.text.positioning == positioning:
-            self.text.fadeOut(.5)
-            self.text.setText(text)
-            self.show_text.fadeIn(1)
+        if self.static_text_views[positioning] is not None:
+            self.static_text_views[positioning].fadeOut(.5)
+            self.static_text_views[positioning].setText(text)
+            self.static_text_views[positioning].fadeIn(1)
         else:
             pass

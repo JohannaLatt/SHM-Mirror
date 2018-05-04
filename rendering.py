@@ -30,7 +30,7 @@ def render(view, data):
     else:
         if view == MSG_TO_MIRROR_KEYS.STATIC_TEXT.name:
             data = json.loads(data)
-            gui.show_static_text(data["text"], data["position"])
+            gui.show_static_text(data["text"], int(data["position"]))
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
