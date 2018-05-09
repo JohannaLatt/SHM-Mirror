@@ -35,7 +35,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         self.gl.glClear(
                 self.gl.GL_COLOR_BUFFER_BIT | self.gl.GL_DEPTH_BUFFER_BIT)
         self.gl.glLoadIdentity()
-        self.gl.glTranslated(0.0, 0.0, 0.0)
+        self.gl.glTranslated(0.0, 0.0, -2000.0)
         self.gl.glCallList(self.drawSkeleton())
         self.drawJoints()
 
@@ -44,12 +44,14 @@ class SkeletonGLWidget(QOpenGLWidget):
         if side < 0:
             return
 
-        self.gl.glViewport((width - side) // 2, (height - side) // 2, side,
-                side)
+        self.gl.glViewport((width - side) // 2, (height - side) // 2, side, side)
 
         self.gl.glMatrixMode(self.gl.GL_PROJECTION)
         self.gl.glLoadIdentity()
-        self.gl.glOrtho(-900, 950, -1400, 900, -500, 1500.0)
+
+        # Left, right, bottom, top, zNear, zFar
+        # self.gl.glOrtho(-2, 2, -2, 2, -10, 40)
+        self.gl.glOrtho(-1200, 1200, -2000, 950, -500, 5000)
         self.gl.glMatrixMode(self.gl.GL_MODELVIEW)
 
     # Draws Lines
@@ -77,7 +79,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         self.gl.glLoadIdentity()
         self.setColor(self.jointColor)
         for joint in self.joint_data:
-            self.gl.glTranslated(joint[0][0], joint[0][1], joint[0][2])
+            self.gl.glTranslated(joint[0][0], joint[0][1], joint[0][2] - 2000)
             glutSolidSphere(20,20,20)
             self.gl.glLoadIdentity()
 
