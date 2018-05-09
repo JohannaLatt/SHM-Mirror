@@ -50,8 +50,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         self.gl.glLoadIdentity()
 
         # Left, right, bottom, top, zNear, zFar
-        # self.gl.glOrtho(-2, 2, -2, 2, -10, 40)
-        self.gl.glOrtho(-1200, 1200, -2000, 950, -500, 5000)
+        self.gl.glOrtho(-2000, 2000, -2000, 2000, -500, 7000)
         self.gl.glMatrixMode(self.gl.GL_MODELVIEW)
 
     # Draws Lines
@@ -67,7 +66,6 @@ class SkeletonGLWidget(QOpenGLWidget):
             self.gl.glVertex3d(joint[0][0], joint[0][1], joint[0][2])  # from
             self.gl.glVertex3d(joint[1][0], joint[1][1], joint[1][2])  # to
             # print("({} {} {}) -> ({} {} {})".format(joint[0][0], joint[0][1], joint[0][2], joint[1][0], joint[1][1], joint[1][2]))
-
 
         self.gl.glEnd()
         self.gl.glEndList()
