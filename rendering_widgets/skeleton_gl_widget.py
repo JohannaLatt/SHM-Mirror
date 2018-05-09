@@ -64,6 +64,8 @@ class SkeletonGLWidget(QOpenGLWidget):
         for joint in self.joint_data:
             self.gl.glVertex3d(joint[0][0], joint[0][1], joint[0][2])  # from
             self.gl.glVertex3d(joint[1][0], joint[1][1], joint[1][2])  # to
+            # print("({} {} {}) -> ({} {} {})".format(joint[0][0], joint[0][1], joint[0][2], joint[1][0], joint[1][1], joint[1][2]))
+
 
         self.gl.glEnd()
         self.gl.glEndList()
@@ -91,10 +93,10 @@ class SkeletonGLWidget(QOpenGLWidget):
         for joint in self.joint_data:
             joint[0][0] = float(joint[0][0])
             joint[0][1] = float(joint[0][1])
-            joint[0][2] = float(joint[0][2]) - 2000
+            joint[0][2] = float(joint[0][2])
             joint[1][0] = float(joint[1][0])
             joint[1][1] = float(joint[1][1])
-            joint[1][2] = float(joint[1][2]) - 2000
+            joint[1][2] = float(joint[1][2])
 
         self.update()
 
