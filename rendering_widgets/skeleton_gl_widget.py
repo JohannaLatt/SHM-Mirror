@@ -58,7 +58,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         genList = self.gl.glGenLists(1)
         self.gl.glNewList(genList, self.gl.GL_COMPILE)
         self.setColor(self.boneColor)
-        self.gl.glLineWidth(10)
+        self.gl.glLineWidth(5)
 
         self.gl.glBegin(self.gl.GL_LINES)
 
@@ -78,7 +78,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         self.setColor(self.jointColor)
         for joint in self.joint_data:
             self.gl.glTranslated(joint[0][0], joint[0][1], joint[0][2] - 2000)
-            glutSolidSphere(20,20,20)
+            glutSolidSphere(30,30,30)
             self.gl.glLoadIdentity()
 
     def setClearColor(self, c):
