@@ -50,7 +50,7 @@ class SkeletonGLWidget(QOpenGLWidget):
         self.gl.glLoadIdentity()
 
         # Left, right, bottom, top, zNear, zFar
-        self.gl.glOrtho(-2000, 2000, -2000, 2000, -500, 7000)
+        self.gl.glOrtho(-2000, 2000, -2000, 2000, -1500, 7000)
         self.gl.glMatrixMode(self.gl.GL_MODELVIEW)
 
     # Draws Lines
