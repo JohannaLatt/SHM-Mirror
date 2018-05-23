@@ -9,7 +9,7 @@ import queue
 
 # Callback for consuming incoming messages
 def consume_server_message(message):
-    # print("[Messaging][info] Received {}:{}...".format(message.method['routing_key'], message.body[0:20]))
+    # print("[Messaging][info] Received {}:{}...".format(message.method['routing_key'], message.body[0:80]))
     rendering.render(message.method['routing_key'], message.body)
 
 

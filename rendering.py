@@ -1,5 +1,7 @@
 from utils.enums import MSG_TO_MIRROR_KEYS, MSG_FROM_MIRROR_KEYS
 from rendering_widgets.health_mirror_gui import HealthMirrorGUI
+from rendering_widgets.gui_base_kivy import GUIBase
+
 
 from PyQt5 import QtWidgets
 
@@ -9,7 +11,11 @@ import sys
 
 def init_gui(Messaging):
     print('[Rendering][info] Initializing GUI')
-    app = QtWidgets.QApplication(sys.argv)
+    # import rendering_widgets.gui_base as GUIBase
+
+    GUIBase().run()
+
+    '''app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Smart Health Mirror')
 
     global gui
@@ -19,7 +25,7 @@ def init_gui(Messaging):
     print('[Rendering][info] GUI ready')
     Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_READY.name, '')
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())'''
 
 
 def render(view, data):
