@@ -44,10 +44,10 @@ class SkeletonWidget(Widget):
                 to_x = self.rescale_joint_x_pos(joint[1][0])
                 to_y = self.rescale_joint_y_pos(joint[1][1])
 
-                Color(0, 0, 1, mode='hsv')
+                Color(0, 0, 1, 0.7, mode='hsv')
                 Line(points=(from_x, from_y, to_x, to_y), width=3)
 
-                Color(0, 1, 1, mode='hsv')
+                Color(0, 1, 1, 0.7, mode='hsv')
                 self.draw_circle(from_x, from_y, 14)
                 self.draw_circle(to_x, to_y, 14)
 

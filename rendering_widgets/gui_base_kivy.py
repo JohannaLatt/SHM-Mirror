@@ -12,6 +12,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.core.window import Window
 
 from rendering_widgets.skeleton_widget import SkeletonWidget
+from rendering_widgets.animated_label import AnimatedLabel
 
 
 class GUIBase(App):
@@ -22,11 +23,20 @@ class GUIBase(App):
     def clear_skeleton(self):
         self.skeleton_widget.clear_skeleton()
 
+    def show_text(self, **kwargs):
+        label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
+        self.root.add_widget(label)
+
+        def remove_label(event, anim):
+            self.root.remove_widget(label)
+
+        label.fade_in_and_out(kwargs["animation"]["fade_in"], kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
+
     def build(self):
         # Fullscreen widget to draw the skeleton
         self.skeleton_widget = SkeletonWidget()
 
-        root = FloatLayout()
-        root.add_widget(self.skeleton_widget)
+        self.root = FloatLayout()
+        self.root.add_widget(self.skeleton_widget)
 
-        return root
+        return self.root
