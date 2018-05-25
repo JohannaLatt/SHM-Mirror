@@ -1,65 +1,29 @@
 from kivy.uix.widget import Widget
-from kivy.clock import Clock
-from kivy.resources import resource_find
+from kivy.graphics import Line, Color, Ellipse
 
-from kivy.graphics.opengl import *
-from kivy.graphics import *
+import json
 
-from OpenGL.GL import *
+
+# Define coordinate system that skeleton data arrives in
+min_x = -3000
+min_y = -2000
+max_x = 3000
+max_y = 2000
 
 
 class SkeletonWidget(Widget):
 
     def __init__(self, **kwargs):
-        self.canvas = RenderContext(compute_normal_mat=True)
-        self.canvas.shader.source = resource_find('simple.glsl')
         super(SkeletonWidget, self).__init__(**kwargs)
-        with self.canvas:
-            self.setup_scene()
 
-    def setup_scene(self):
-        glClearColor(0, 0, 0, 0)
-        glShadeModel(GL_FLAT)
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_CULL_FACE)
+    def render_skeleton_data(self, data_str):
+        # Clear the canvas
+        self.canvas.clear()
 
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
+        # Prepare the data
+        self.joint_data = json.loads(data_str)
 
-        # Left, right, bottom, top, zNear, zFar
-        glOrtho(-2000, 2000, -2000, 2000, -1500, 7000)
-        glMatrixMode(GL_MODELVIEW)
-
-    def paintGL(self):
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glLoadIdentity()
-        glTranslated(0.0, 0.0, -2000.0)
-        glCallList(self.drawSkeleton())
-        #drawJoints()
-        self.canvas.ask_update()
-
-    def draw_skeleton(self):
-        glGenLists(1)
-        glNewList(genList, GL_COMPILE)
-        glColor4f(1, 1, 1, 0)
-        glLineWidth(5)
-
-        glUseProgram(0)
-        glBegin(GL_LINES)
-
-        for joint in self.joint_data:
-            glVertex3d(joint[0][0], joint[0][1], joint[0][2])  # from
-            glVertex3d(joint[1][0], joint[1][1], joint[1][2])  # to
-            # print("({} {} {}) -> ({} {} {})".format(joint[0][0], joint[0][1], joint[0][2], joint[1][0], joint[1][1], joint[1][2]))
-
-        glEnd()
-        glEndList()
-
-        return genList
-
-    def setJointData(self, data):
-        self.joint_data = data
-
+        # Convert the data to float
         for joint in self.joint_data:
             joint[0][0] = float(joint[0][0])
             joint[0][1] = float(joint[0][1])
@@ -68,4 +32,33 @@ class SkeletonWidget(Widget):
             joint[1][1] = float(joint[1][1])
             joint[1][2] = float(joint[1][2])
 
-        self.paintGL()
+        # Sort by depth - biggest value should be first, ie furthest away
+        # so we can fake the 3D depth when rendering
+        self.joint_data.sort(key=lambda x: x[1][2], reverse=True)
+
+        # Render the data
+        with self.canvas:
+            for joint in self.joint_data:
+                from_x = self.rescale_joint_x_pos(joint[0][0])
+                from_y = self.rescale_joint_y_pos(joint[0][1])
+                to_x = self.rescale_joint_x_pos(joint[1][0])
+                to_y = self.rescale_joint_y_pos(joint[1][1])
+
+                Color(0, 0, 1, mode='hsv')
+                Line(points=(from_x, from_y, to_x, to_y), width=3)
+
+                Color(0, 1, 1, mode='hsv')
+                self.draw_circle(from_x, from_y, 14)
+                self.draw_circle(to_x, to_y, 14)
+
+    def clear_skeleton(self):
+        self.canvas.clear()
+
+    def draw_circle(self, x, y, diameter):
+        Ellipse(pos=(x - diameter / 2, y - diameter/2), size=(diameter,diameter))
+
+    def rescale_joint_x_pos(self, x):
+        return ((x - min_x) / (max_x - min_x)) * self.width
+
+    def rescale_joint_y_pos(self, y):
+        return ((y - min_y) / (max_y - min_y)) * self.height
