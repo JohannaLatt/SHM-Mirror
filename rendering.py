@@ -13,7 +13,9 @@ def init_gui(Messaging):
     print('[Rendering][info] Initializing GUI')
     # import rendering_widgets.gui_base as GUIBase
 
-    GUIBase().run()
+    global gui
+    gui = GUIBase()
+    gui.run()
 
     '''app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Smart Health Mirror')
@@ -36,7 +38,7 @@ def render(view, data):
     else:
         if view == MSG_TO_MIRROR_KEYS.STATIC_TEXT.name:
             data = json.loads(data)
-            gui.show_static_text(data["text"], int(data["position"]))
+            #gui.show_static_text(data["text"], int(data["position"]))
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
