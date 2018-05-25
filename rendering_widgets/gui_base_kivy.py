@@ -45,23 +45,24 @@ class GUIBase(App):
             joint[1][1] = float(joint[1][1])
             joint[1][2] = float(joint[1][2])
 
-        sorted(self.joint_data, key=lambda x: x[0][2], reverse=True)
+        # Sort by depth - biggest value should be first, ie furthest away
+        self.joint_data.sort(key=lambda x: x[1][2], reverse=True)
 
+        print(self.joint_data)
         # Render the data - draw bones first and then the joints so they overlap the joints
         with self.skeleton_widget.canvas:
-            Color(0, 0, 1, mode='hsv')
             for joint in self.joint_data:
                 from_x = self.rescale_joint_x_pos(joint[0][0])
                 from_y = self.rescale_joint_y_pos(joint[0][1])
                 to_x = self.rescale_joint_x_pos(joint[1][0])
                 to_y = self.rescale_joint_y_pos(joint[1][1])
+
+                Color(0, 0, 1, mode='hsv')
                 Line(points=(from_x, from_y, to_x, to_y), width=3)
 
-            Color(0, 1, 1, mode='hsv')
-            for joint in self.joint_data:
-                from_x = self.rescale_joint_x_pos(joint[0][0])
-                from_y = self.rescale_joint_y_pos(joint[0][1])
+                Color(0, 1, 1, mode='hsv')
                 self.draw_circle(from_x, from_y, 14)
+                self.draw_circle(to_x, to_y, 14)
 
     def clear_skeleton(self):
         self.skeleton_widget.canvas.clear()
