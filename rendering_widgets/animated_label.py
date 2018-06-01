@@ -25,26 +25,45 @@ class AnimatedLabel(Label):
     def set_text(self, text):
         self.text = text
 
+    def show(self):
+        self.opacity = 1
+
+    def hide(self):
+        self.opacity = 0
+
     def fade_in(self, time=1, start=True):
-        anim = Animation(opacity=1.0, duration=time)
-        if start: anim.start(self)
-        return anim
+        self.cancel_animations()
 
-    def fade_out(self, time=1, start=True):
-        anim = Animation(opacity=0.0, duration=time)
-        if start: anim.start(self)
-        return anim
+        self.anim_in = Animation(opacity=1.0, duration=time)
+        if start:
+            self.anim_in.start(self)
+        return self.anim_in
 
+    def fade_out(self, time=1, start=True, cb=lambda x, y: True):
+        self.cancel_animations()
+
+        self.anim_out = Animation(opacity=0.0, duration=time)
+        self.anim_out.bind(on_complete=cb)
+        if start:
+            self.anim_out.start(self)
+        return self.anim_out
+
+    # Callback does nothing on default
     def fade_in_and_out(self, time_in=2, stay=5, time_out=2, cb=lambda x, y: True):
-        anim_in = self.fade_in(time_in, False)
+        self.cancel_animations()
+
+        self.anim_in = self.fade_in(time_in, False)
 
         def fade_out_and_notify(time, cb, *largs):
-            anim_out = self.fade_out(time, False)
-            anim_out.bind(on_complete=cb)
-            anim_out.start(self)
+            self.anim_out = self.fade_out(time, False)
+            self.anim_out.bind(on_complete=cb)
+            self.anim_out.start(self)
 
-        anim_in.bind(on_complete=Clock.schedule_once(partial(fade_out_and_notify, time_out, cb), stay))
-        anim_in.start(self)
+        self.anim_in.bind(on_complete=Clock.schedule_once(partial(fade_out_and_notify, time_out, cb), stay))
+        self.anim_in.start(self)
+
+    def cancel_animations(self):
+        Animation.cancel_all(self)
 
     def get_left_x(self):
         return self.center_x - self.texture_size[0] * 0.5

@@ -24,15 +24,37 @@ class GUIBase(App):
         self.skeleton_widget.clear_skeleton()
 
     def show_text(self, **kwargs):
-        label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
-        self.root.add_widget(label)
-
+        # Define function to remove label from root
         def remove_label(event, anim):
             self.root.remove_widget(label)
 
-        label.fade_in_and_out(kwargs["animation"]["fade_in"], kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
+        # Check if there is an ID being sent, ie the label might exist already
+        if kwargs["id"] is not None:
+            if kwargs["id"] in self.labels:
+                label = self.labels[kwargs["id"]]
+
+                # Stop possible animations
+                label.cancel_animations()
+
+                # Set the text and re-animate the text, skipping the fade-in
+                label.set_text(kwargs["text"])
+                label.fade_in_and_out(0, kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
+            else:
+                label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
+                self.labels[kwargs["id"]] = label
+                self.root.add_widget(label)
+
+                label.fade_in_and_out(kwargs["animation"]["fade_in"], kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
+        else:
+            label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
+            self.root.add_widget(label)
+
+            label.fade_in_and_out(kwargs["animation"]["fade_in"], kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
 
     def build(self):
+        # Dict to store reused labels
+        self.labels = {}
+
         # Fullscreen widget to draw the skeleton
         self.skeleton_widget = SkeletonWidget()
 

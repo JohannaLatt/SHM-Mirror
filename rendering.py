@@ -27,12 +27,13 @@ def render(view, data):
 
             if is_valid_data:
                 gui.show_text(text=data["text"],
-                                    position=data["position"],
-                                    animation={
-                                        "fade_in": data["fade_in"],
-                                        "stay": data["stay"],
-                                        "fade_out": data["fade_out"]
-                                    })
+                                position=data["position"],
+                                id=data["id"],
+                                animation={
+                                    "fade_in": data["animation"]["fade_in"],
+                                    "stay": data["animation"]["stay"],
+                                    "fade_out": data["animation"]["fade_out"]
+                                })
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
@@ -45,18 +46,21 @@ def check_text_arguments(data):
     if "text" not in data:
         return False
 
-    if "position" not in data or not isinstance(data, list):
+    if "position" not in data:
         data["position"] = (0.5, 0.9)
+    if "id" not in data:
+        data["id"] = None
     if "animation" not in data:
-        data["fade_in"] = 2
-        data["stay"] = 5
-        data["fade_out"] = 2
+        data["animation"] = {}
+        data["animation"]["fade_in"] = 2
+        data["animation"]["stay"] = 5
+        data["animation"]["fade_out"] = 2
     else:
         if "fade_in" not in data["animation"]:
-            data["fade_in"] = 2
+            data["animation"]["fade_in"] = 2
         if "stay" not in data["animation"]:
-            data["stay"] = 5
+            data["animation"]["stay"] = 5
         if "fade_out" not in data["animation"]:
-            data["fade_out"] = 2
+            data["animation"]["fade_out"] = 2
 
     return True
