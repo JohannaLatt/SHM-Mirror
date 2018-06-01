@@ -14,6 +14,7 @@ class AnimatedLabel(Label):
         self.opacity = 0
         self.font_size = 40
         self.bold = True
+        self.text_id = None
 
     def set_pos(self, x, y):
         self.pos = (x, y)
@@ -24,6 +25,12 @@ class AnimatedLabel(Label):
 
     def set_text(self, text):
         self.text = text
+
+    def set_id(self, id):
+        self.text_id = id
+
+    def get_id(self):
+        return self.text_id
 
     def show(self):
         self.opacity = 1

@@ -25,8 +25,12 @@ class GUIBase(App):
 
     def show_text(self, **kwargs):
         # Define function to remove label from root
-        def remove_label(event, anim):
+        def remove_label(animation, label):
             self.root.remove_widget(label)
+
+            # Remove reference to the label
+            if label.get_id() in self.labels:
+                del self.labels[label.get_id()]
 
         # Check if there is an ID being sent, ie the label might exist already
         if kwargs["id"] is not None:
@@ -41,6 +45,7 @@ class GUIBase(App):
                 label.fade_in_and_out(0, kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
             else:
                 label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
+                label.set_id(kwargs["id"])
                 self.labels[kwargs["id"]] = label
                 self.root.add_widget(label)
 
