@@ -25,6 +25,7 @@ class AnimatedLabel(Label):
         self.text = text
 
     def set_color(self, color):
+        print(color)
         self.color = color
 
     def set_id(self, id):
