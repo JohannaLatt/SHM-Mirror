@@ -42,16 +42,17 @@ class GUIBase(App):
 
                 # Set the text and re-animate the text, skipping the fade-in
                 label.set_text(kwargs["text"])
+                label.set_color(kwargs["color"])
                 label.fade_in_and_out(0, kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
             else:
-                label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
+                label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]}, color=kwargs["color"])
                 label.set_id(kwargs["id"])
                 self.labels[kwargs["id"]] = label
                 self.root.add_widget(label)
 
                 label.fade_in_and_out(kwargs["animation"]["fade_in"], kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)
         else:
-            label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]})
+            label = AnimatedLabel(text=kwargs["text"], pos_hint={"x": kwargs["position"][0], "y": kwargs["position"][1]}, color=kwargs["color"])
             self.root.add_widget(label)
 
             label.fade_in_and_out(kwargs["animation"]["fade_in"], kwargs["animation"]["stay"], kwargs["animation"]["fade_out"], remove_label)

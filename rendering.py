@@ -27,9 +27,10 @@ def render(view, data):
 
             if is_valid_data:
                 gui.show_text(text=data["text"],
-                                position=data["position"],
-                                id=data["id"],
-                                animation={
+                                position = data["position"],
+                                id = data["id"],
+                                color = data["color"],
+                                animation = {
                                     "fade_in": data["animation"]["fade_in"],
                                     "stay": data["animation"]["stay"],
                                     "fade_out": data["animation"]["fade_out"]
@@ -50,6 +51,8 @@ def check_text_arguments(data):
         data["position"] = (0.5, 0.9)
     if "id" not in data:
         data["id"] = None
+    if "color" not in data:
+        data["color"] = (1, 1, 1, 1)
     if "animation" not in data:
         data["animation"] = {}
         data["animation"]["fade_in"] = 2

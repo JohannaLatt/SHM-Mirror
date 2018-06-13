@@ -6,11 +6,9 @@ from functools import partial
 
 
 class AnimatedLabel(Label):
-
     def __init__(self, **kwargs):
         super(AnimatedLabel, self).__init__(**kwargs)
         self.size_hint = (0, 0)
-        self.color = (1, 1, 1)
         self.opacity = 0
         self.font_size = 40
         self.bold = True
@@ -25,6 +23,10 @@ class AnimatedLabel(Label):
 
     def set_text(self, text):
         self.text = text
+
+    def set_color(self, color):
+        print(color)
+        self.color = color
 
     def set_id(self, id):
         self.text_id = id
@@ -56,7 +58,11 @@ class AnimatedLabel(Label):
         return self.anim_out
 
     # Callback does nothing on default
-    def fade_in_and_out(self, time_in=2, stay=5, time_out=2, cb=lambda x, y: True):
+    def fade_in_and_out(self,
+                        time_in=2,
+                        stay=5,
+                        time_out=2,
+                        cb=lambda x, y: True):
         self.cancel_animations()
 
         self.anim_in = self.fade_in(time_in, False)
@@ -66,7 +72,9 @@ class AnimatedLabel(Label):
             self.anim_out.bind(on_complete=cb)
             self.anim_out.start(self)
 
-        self.anim_in.bind(on_complete=Clock.schedule_once(partial(fade_out_and_notify, time_out, cb), stay))
+        self.anim_in.bind(
+            on_complete=Clock.schedule_once(
+                partial(fade_out_and_notify, time_out, cb), stay))
         self.anim_in.start(self)
 
     def cancel_animations(self):
