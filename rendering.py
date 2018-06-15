@@ -22,7 +22,7 @@ def render(view, data):
     except NameError:
         print('[Rendering][warning] Message discarded, rendering not initialized yet')
     else:
-        if view == MSG_TO_MIRROR_KEYS.STATIC_TEXT.name:
+        if view == MSG_TO_MIRROR_KEYS.TEXT.name:
             data = json.loads(data)
             gui.show_static_text(data)
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
