@@ -15,26 +15,19 @@ def init_gui(Messaging):
     gui.run()
 
 
+# Called by kivy
 def render(view, data):
     try:
         gui
     except NameError:
         print('[Rendering][warning] Message discarded, rendering not initialized yet')
     else:
-        if view == MSG_TO_MIRROR_KEYS.STATIC_TEXT.name:
+        if view == MSG_TO_MIRROR_KEYS.TEXT.name:
             data = json.loads(data)
             is_valid_data = check_text_arguments(data)
 
             if is_valid_data:
-                gui.show_text(text=data["text"],
-                                position = data["position"],
-                                id = data["id"],
-                                color = data["color"],
-                                animation = {
-                                    "fade_in": data["animation"]["fade_in"],
-                                    "stay": data["animation"]["stay"],
-                                    "fade_out": data["animation"]["fade_out"]
-                                })
+                gui.show_text(data)
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
