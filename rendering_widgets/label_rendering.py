@@ -1,19 +1,4 @@
-from kivy.config import Config
-
-Config.set('graphics', 'window_state', 'maximized')
-#Config.set('graphics', 'fullscreen', 'auto')
-Config.set('graphics', 'width', '1700')
-Config.set('graphics', 'height', '900')
-Config.set('graphics', 'resizable', 0)
-
-from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.floatlayout import FloatLayout
-from kivy.core.window import Window
-
-from rendering_widgets.skeleton_widget import SkeletonWidget
 from rendering_widgets.animated_label import AnimatedLabel
-
 
 # ANIMATION
 FADE_IN = "fade_in"
@@ -21,38 +6,57 @@ STAY = "stay"
 FADE_OUT = "fade_out"
 
 
-class GUIBase(App):
+class LabelRenderer():
 
-    # Init (called by kivy)
-    def build(self):
+    def __init__(self, root):
+        # Store the root to be able to add and remove labels
+        self.root = root
+
         # Dict to store reused labels
         self.labels = {}
 
-        # Fullscreen widget to draw the skeleton
-        self.skeleton_widget = SkeletonWidget()
+    def check_text_arguments(self, data):
+        if "text" not in data:
+            return False
 
-        self.root = FloatLayout()
-        self.root.add_widget(self.skeleton_widget)
+        if "position" not in data:
+            data["position"] = (0.5, 0.9)
+        if "color" not in data:
+            data["color"] = (1, 1, 1, 1)
+        if "animation" not in data:
+            data["animation"] = {}
+            data["animation"]["fade_in"] = 2
+            data["animation"]["stay"] = 5
+            data["animation"]["fade_out"] = 2
+        else:
+            if "fade_in" not in data["animation"]:
+                data["animation"]["fade_in"] = 2
+            if "stay" not in data["animation"]:
+                data["animation"]["stay"] = 5
+            if "fade_out" not in data["animation"]:
+                data["animation"]["fade_out"] = 2
 
-        return self.root
+        return True
 
-    def render_skeleton_data(self, data_str):
-        self.skeleton_widget.render_skeleton_data(data_str)
+    def show_static_text(self, data):
+        # Check the data to make sure it has the necessary arguments
+        is_valid_data = self.check_text_arguments(data)
 
-    def clear_skeleton(self):
-        self.skeleton_widget.clear_skeleton()
+        if not is_valid_data:
+            print("[LabelRenderer][warning] Received invalid static text data - discarding")
+            pass
 
-    def show_text(self, data):
         # Save the label's position
         x_pos = data["position"][0]
         y_pos = data["position"][1]
 
         # Check if there is an ID being sent, ie the label might exist already
-        if data["id"] is not None:
+        if "id" in data:
             # Labels exists already
             if data["id"] in self.labels:
                 label = self.labels[data["id"]]
                 self.update_existing_label(label, data)
+
             # We need a new label and save a reference to it via the ID
             else:
                 label = AnimatedLabel(text=data["text"], pos_hint={"x": x_pos, "y": y_pos}, color=data["color"])
@@ -60,6 +64,7 @@ class GUIBase(App):
                 self.labels[data["id"]] = label
                 self.root.add_widget(label)
                 self.animate_and_remove_label(label, {FADE_IN: data["animation"][FADE_IN], STAY: data["animation"][STAY], FADE_OUT: data["animation"][FADE_OUT]})
+
         # We need a new label that we do not need to save for later reference
         else:
             label = AnimatedLabel(text=data["text"], pos_hint={"x": x_pos, "y": y_pos}, color=data["color"])
