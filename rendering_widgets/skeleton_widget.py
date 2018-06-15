@@ -21,28 +21,28 @@ class SkeletonWidget(Widget):
         self.canvas.clear()
 
         # Prepare the data
-        self.joint_data = json.loads(data_str)
+        data = json.loads(data_str)
+        self.joints = data['Joints']
+        self.bones = data['Bones']
 
-        # Convert the data to float
-        for joint in self.joint_data:
-            joint[0][0] = float(joint[0][0])
-            joint[0][1] = float(joint[0][1])
-            joint[0][2] = float(joint[0][2])
-            joint[1][0] = float(joint[1][0])
-            joint[1][1] = float(joint[1][1])
-            joint[1][2] = float(joint[1][2])
+        # Scale the joint coordinates to screen coordinates
+        for joint, joint_position in self.joints.items():
+            self.joints[joint] = [self.rescale_joint_x_pos(joint_position[0]),
+                                  self.rescale_joint_y_pos(joint_position[1]),
+                                  joint_position[2]]
 
-        # Sort by depth - biggest value should be first, ie furthest away
-        # so we can fake the 3D depth when rendering
-        self.joint_data.sort(key=lambda x: x[1][2], reverse=True)
+        # Sort the joints by depth (z) - biggest value should be first, ie
+        # furthest away so we can fake the 3D depth when rendering
+        sorted_bones = sorted(self.bones.keys(), key=lambda bone: self.joints[self.bones[bone][0]][2], reverse=True)
 
         # Render the data
         with self.canvas:
-            for joint in self.joint_data:
-                from_x = self.rescale_joint_x_pos(joint[0][0])
-                from_y = self.rescale_joint_y_pos(joint[0][1])
-                to_x = self.rescale_joint_x_pos(joint[1][0])
-                to_y = self.rescale_joint_y_pos(joint[1][1])
+            for sorted_bone in sorted_bones:
+                bone_joints = self.bones[sorted_bone]
+                from_x = self.joints[bone_joints[0]][0]
+                from_y = self.joints[bone_joints[0]][1]
+                to_x = self.joints[bone_joints[1]][0]
+                to_y = self.joints[bone_joints[1]][1]
 
                 Color(0, 0, 1, 0.7, mode='hsv')
                 Line(points=(from_x, from_y, to_x, to_y), width=3)
