@@ -26,7 +26,7 @@ class GUIBase(App):
         self.root.add_widget(self.skeleton_widget)
 
         # Initalize the module that takes care of the label rendering
-        self.LabelRenderer = LabelRenderer(self.root)
+        self.label_renderer = LabelRenderer(self)
 
         return self.root
 
@@ -37,4 +37,4 @@ class GUIBase(App):
         self.skeleton_widget.clear_skeleton()
 
     def show_static_text(self, data):
-        self.LabelRenderer.show_static_text(data)
+        self.label_renderer.show_static_text(data)

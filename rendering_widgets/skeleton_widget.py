@@ -3,7 +3,6 @@ from kivy.graphics import Line, Color, Ellipse
 
 import json
 
-
 # Define coordinate system that skeleton data arrives in
 min_x = -3000
 min_y = -2000
@@ -12,9 +11,10 @@ max_y = 2000
 
 
 class SkeletonWidget(Widget):
-
     def __init__(self, **kwargs):
         super(SkeletonWidget, self).__init__(**kwargs)
+        self.joints = []
+        self.bones = []
 
     def render_skeleton_data(self, data_str):
         # Clear the canvas
@@ -27,13 +27,17 @@ class SkeletonWidget(Widget):
 
         # Scale the joint coordinates to screen coordinates
         for joint, joint_position in self.joints.items():
-            self.joints[joint] = [self.rescale_joint_x_pos(joint_position[0]),
-                                  self.rescale_joint_y_pos(joint_position[1]),
-                                  joint_position[2]]
+            self.joints[joint] = [
+                self.rescale_joint_x_pos(joint_position[0]),
+                self.rescale_joint_y_pos(joint_position[1]), joint_position[2]
+            ]
 
         # Sort the joints by depth (z) - biggest value should be first, ie
         # furthest away so we can fake the 3D depth when rendering
-        sorted_bones = sorted(self.bones.keys(), key=lambda bone: self.joints[self.bones[bone][0]][2], reverse=True)
+        sorted_bones = sorted(
+            self.bones.keys(),
+            key=lambda bone: self.joints[self.bones[bone][0]][2],
+            reverse=True)
 
         # Render the data
         with self.canvas:
@@ -55,10 +59,19 @@ class SkeletonWidget(Widget):
         self.canvas.clear()
 
     def draw_circle(self, x, y, diameter):
-        Ellipse(pos=(x - diameter / 2, y - diameter/2), size=(diameter,diameter))
+        Ellipse(
+            pos=(x - diameter / 2, y - diameter / 2),
+            size=(diameter, diameter))
 
     def rescale_joint_x_pos(self, x):
         return ((x - min_x) / (max_x - min_x)) * self.width
 
     def rescale_joint_y_pos(self, y):
         return ((y - min_y) / (max_y - min_y)) * self.height
+
+    def get_percentage_joint_pos(self, joint):
+        if joint in self.joints:
+            x_pos = self.joints[joint][0]
+            y_pos = self.joints[joint][1]
+
+            return [x_pos / self.width, y_pos / self.height]

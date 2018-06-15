@@ -10,7 +10,6 @@ class AnimatedLabel(Label):
         super(AnimatedLabel, self).__init__(**kwargs)
         self.size_hint = (0, 0)
         self.opacity = 0
-        self.font_size = 40
         self.bold = True
         self.text_id = None
 
@@ -32,6 +31,9 @@ class AnimatedLabel(Label):
 
     def get_id(self):
         return self.text_id
+
+    def set_font_size(self, size):
+        self.font_size = size
 
     def show(self):
         self.opacity = 1
