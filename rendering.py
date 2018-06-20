@@ -29,5 +29,7 @@ def render(view, data):
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
             gui.render_skeleton_data(data)
+        elif view == MSG_TO_MIRROR_KEYS.CHANGE_SKELETON_COLOR.name:
+            gui.change_joint_or_bone_color(data)
         else:
             print('[Rendering][warning] %r is not a suported view' % view)

@@ -33,6 +33,9 @@ class GUIBase(App):
     def render_skeleton_data(self, data_str):
         self.skeleton_widget.render_skeleton_data(data_str)
 
+    def change_joint_or_bone_color(self, data_str):
+        self.skeleton_widget.color_bone_or_joint(data_str)
+
     def clear_skeleton(self):
         self.skeleton_widget.clear_skeleton()
 
