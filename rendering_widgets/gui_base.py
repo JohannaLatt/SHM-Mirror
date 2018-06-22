@@ -2,7 +2,7 @@ from kivy.config import Config
 
 Config.set('graphics', 'window_state', 'maximized')
 #Config.set('graphics', 'fullscreen', 'auto')
-Config.set('graphics', 'width', '740')
+Config.set('graphics', 'width', '1030')
 Config.set('graphics', 'height', '870')
 Config.set('graphics', 'resizable', 0)
 

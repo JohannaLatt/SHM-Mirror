@@ -1,12 +1,15 @@
 from kivy.uix.label import Label
 from kivy.animation import Animation
 from kivy.clock import Clock
+from kivy.core.window import Window
 
 from functools import partial
 
 
 class AnimatedLabel(Label):
     def __init__(self, **kwargs):
+        kwargs["font_size"] = kwargs["font_size"] * (((Window.width / 1700) + 0.2) + ((Window.height / 900) * .1))
+
         super(AnimatedLabel, self).__init__(**kwargs)
         self.size_hint = (0, 0)
         self.opacity = 0

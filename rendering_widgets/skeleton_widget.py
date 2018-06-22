@@ -5,9 +5,9 @@ from kivy.core.window import Window
 import json
 
 # Define coordinate system that skeleton data arrives in
-min_x = -1000  # based on window-width of 1700
+min_x = -1500  # based on window-width of 1700
 min_y = -1000  # based on window-height of 900
-max_x = 2000
+max_x = 2500
 max_y = 1000
 
 
