@@ -1,13 +1,14 @@
 from kivy.uix.widget import Widget
 from kivy.graphics import Line, Color, Ellipse
+from kivy.core.window import Window
 
 import json
 
 # Define coordinate system that skeleton data arrives in
-min_x = -3000
-min_y = -2000
-max_x = 3000
-max_y = 2000
+min_x = -1000  # based on window-width of 1700
+min_y = -1000  # based on window-height of 900
+max_x = 2000
+max_y = 1000
 
 
 class SkeletonWidget(Widget):
@@ -20,9 +21,15 @@ class SkeletonWidget(Widget):
         self.bone_colors = {}
 
         self.line_width = 3
-        self.circle_diameter = 14
+        self.circle_diameter = 18
         self.default_bone_color = (0, 0, 1, 0.7)
         self.default_joint_color = (0, 1, 1, 0.7)
+
+        # Adapt the coordinate system according to the screen size
+        self.min_x = min_x * (Window.size[0] / 1700)
+        self.min_y = min_y * (Window.size[1] / 900)
+        self.max_x = max_x * (Window.size[0] / 1700)
+        self.max_y = max_y * (Window.size[1] / 900)
 
     def render_skeleton_data(self, data_str):
         # Clear the canvas
@@ -124,10 +131,10 @@ class SkeletonWidget(Widget):
             size=(diameter, diameter))
 
     def rescale_joint_x_pos(self, x):
-        return ((x - min_x) / (max_x - min_x)) * self.width
+        return ((x - self.min_x) / (self.max_x - self.min_x)) * self.width
 
     def rescale_joint_y_pos(self, y):
-        return ((y - min_y) / (max_y - min_y)) * self.height
+        return ((y - self.min_y) / (self.max_y - self.min_y)) * self.height
 
     def get_percentage_joint_pos(self, joint):
         if joint in self.joints:
