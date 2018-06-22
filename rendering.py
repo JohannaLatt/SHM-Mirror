@@ -22,16 +22,20 @@ def render(view, data):
     except NameError:
         print('[Rendering][warning] Message discarded, rendering not initialized yet')
     else:
-        if view == MSG_TO_MIRROR_KEYS.TEXT.name:
+        try:
             data = json.loads(data)
-            gui.show_text(data)
-        elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
-            gui.clear_skeleton()
-        elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
-            gui.render_skeleton_data(data)
-        elif view == MSG_TO_MIRROR_KEYS.CHANGE_SKELETON_COLOR.name:
-            gui.change_joint_or_bone_color(data)
-        elif view == MSG_TO_MIRROR_KEYS.UPDATE_GRAPHS.name:
-            gui.update_graps(data)
+        except json.decoder.JSONDecodeError:
+            print('[Rendering][warning] Message discarded, could not decode json: {}'.format(data))
         else:
-            print('[Rendering][warning] %r is not a suported view' % view)
+            if view == MSG_TO_MIRROR_KEYS.TEXT.name:
+                gui.show_text(data)
+            elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
+                gui.clear_skeleton()
+            elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
+                gui.render_skeleton_data(data)
+            elif view == MSG_TO_MIRROR_KEYS.CHANGE_SKELETON_COLOR.name:
+                gui.change_joint_or_bone_color(data)
+            elif view == MSG_TO_MIRROR_KEYS.UPDATE_GRAPHS.name:
+                gui.update_graps(data)
+            else:
+                print('[Rendering][warning] %r is not a suported view' % view)

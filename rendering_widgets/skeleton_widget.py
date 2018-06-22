@@ -2,8 +2,6 @@ from kivy.uix.widget import Widget
 from kivy.graphics import Line, Color, Ellipse
 from kivy.core.window import Window
 
-import json
-
 # Define coordinate system that skeleton data arrives in
 min_x = -1500  # based on window-width of 1700
 min_y = -1000  # based on window-height of 900
@@ -31,12 +29,11 @@ class SkeletonWidget(Widget):
         self.max_x = max_x * (Window.size[0] / 1700)
         self.max_y = max_y * (Window.size[1] / 900)
 
-    def render_skeleton_data(self, data_str):
+    def render_skeleton_data(self, data):
         # Clear the canvas
         self.canvas.clear()
 
         # Prepare the data
-        data = json.loads(data_str)
         self.joints = data['Joints']
         self.bones = data['Bones']
 
@@ -92,9 +89,6 @@ class SkeletonWidget(Widget):
         return self.default_joint_color
 
     def color_bone_or_joint(self, data):
-        # Prepare the data
-        data = json.loads(data)
-
         # Get the data
         type = data['type'].lower()
         name = data['name']
