@@ -24,12 +24,14 @@ def render(view, data):
     else:
         if view == MSG_TO_MIRROR_KEYS.TEXT.name:
             data = json.loads(data)
-            gui.show_static_text(data)
+            gui.show_text(data)
         elif view == MSG_TO_MIRROR_KEYS.CLEAR_SKELETON.name:
             gui.clear_skeleton()
         elif view == MSG_TO_MIRROR_KEYS.RENDER_SKELETON.name:
             gui.render_skeleton_data(data)
         elif view == MSG_TO_MIRROR_KEYS.CHANGE_SKELETON_COLOR.name:
             gui.change_joint_or_bone_color(data)
+        elif view == MSG_TO_MIRROR_KEYS.UPDATE_GRAPHS.name:
+            gui.update_graps(data)
         else:
             print('[Rendering][warning] %r is not a suported view' % view)

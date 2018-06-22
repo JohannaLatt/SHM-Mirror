@@ -12,7 +12,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.core.window import Window
 
 from rendering_widgets.skeleton_widget import SkeletonWidget
-from rendering_widgets.label_rendering import LabelRenderer
+from rendering_widgets.label_renderer import LabelRenderer
+from rendering_widgets.graph_renderer import GraphRenderer
 
 
 class GUIBase(App):
@@ -28,6 +29,9 @@ class GUIBase(App):
         # Initalize the module that takes care of the label rendering
         self.label_renderer = LabelRenderer(self)
 
+        # Initialize the graph-rendering module
+        self.graph_renderer = GraphRenderer(self)
+
         return self.root
 
     def render_skeleton_data(self, data_str):
@@ -42,6 +46,10 @@ class GUIBase(App):
         if hasattr(self, 'skeleton_widget'):
             self.skeleton_widget.clear_skeleton()
 
-    def show_static_text(self, data):
+    def show_text(self, data):
         if hasattr(self, 'label_renderer'):
-            self.label_renderer.show_static_text(data)
+            self.label_renderer.show_text(data)
+
+    def update_graps(self, data):
+        if hasattr(self, 'graph_renderer'):
+            self.graph_renderer.add_data(data)

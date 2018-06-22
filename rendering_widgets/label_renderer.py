@@ -45,8 +45,7 @@ class LabelRenderer():
 
         return True
 
-    def show_static_text(self, data):
-
+    def show_text(self, data):
         # Check the data to make sure it has the necessary arguments
         is_valid_data = self.check_text_arguments(data)
 
