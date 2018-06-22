@@ -10,7 +10,7 @@ class AnimatedLabel(Label):
     def __init__(self, **kwargs):
         kwargs["font_size"] = kwargs["font_size"] * (((Window.width / 1700) + 0.2) + ((Window.height / 900) * .1))
 
-        super(AnimatedLabel, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.size_hint = (0, 0)
         self.opacity = 0
         self.bold = True
@@ -20,8 +20,8 @@ class AnimatedLabel(Label):
         self.pos = (x, y)
 
     # Set position in percentage of the screen (x = left, y = bottom)
-    def set_pos_hint(self, x, y):
-        self.pos_hint = {"x": x, "y": y}
+    def set_pos_hint(self, hint):
+        self.pos_hint = hint
 
     def set_text(self, text):
         self.text = text

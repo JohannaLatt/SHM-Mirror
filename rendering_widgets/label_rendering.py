@@ -27,7 +27,7 @@ class LabelRenderer():
         if "font_size" not in data:
             data["font_size"] = 40
         if "position" not in data:
-            data["position"] = (0.5, 0.9)
+            data["position"] = {"x": 0.5, "y": 0.9}
         if "color" not in data:
             data["color"] = (1, 1, 1, 1)
         if "animation" not in data:
@@ -54,7 +54,7 @@ class LabelRenderer():
             print("[LabelRenderer][warning] Received invalid static text data - discarding")
             pass
 
-        # Get or calculate the label's position
+        # Calculate the label's position if it is dynamic
         if isinstance(data["position"], str):
             # Dynamic label at a joint's position
             pos = self.skeleton_widget.get_percentage_joint_pos(data["position"])
@@ -66,20 +66,18 @@ class LabelRenderer():
                 x_pos -= 0.015
             else:
                 x_pos += 0.015
-        else:
-            x_pos = data["position"][0]
-            y_pos = data["position"][1]
+            data["position"] = {"x": x_pos, "y": y_pos}
 
         # Check if there is an ID being sent, ie the label might exist already
         if "id" in data:
             # Label exists already
             if data["id"] in self.static_labels:
                 label = self.static_labels[data["id"]]
-                self.update_existing_label(label, data, x_pos, y_pos)
+                self.update_existing_label(label, data, data["position"])
 
             # We need a new label and save a reference to it via the ID
             else:
-                label = AnimatedLabel(text=data["text"], pos_hint={"x": x_pos, "y": y_pos}, color=data["color"], font_size=data["font_size"])
+                label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"])
                 label.set_id(data["id"])
                 self.static_labels[data["id"]] = label
                 self.root.add_widget(label)
@@ -87,18 +85,18 @@ class LabelRenderer():
 
         # We need a new label that we do not need to save for later reference
         else:
-            label = AnimatedLabel(text=data["text"], pos_hint={"x": x_pos, "y": y_pos}, color=data["color"], font_size=data["font_size"])
+            label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"])
             self.root.add_widget(label)
             self.animate_and_remove_label(label, {FADE_IN: data["animation"][FADE_IN], STAY: data["animation"][STAY], FADE_OUT: data["animation"][FADE_OUT]})
 
-    def update_existing_label(self, label, data, x_pos, y_pos):
+    def update_existing_label(self, label, data, pos):
         # Stop possible animations
         label.cancel_animations()
 
         # Set the text and re-animate the text, skipping the fade-in
         label.set_text(data["text"])
         label.set_color(data["color"])
-        label.set_pos_hint(x_pos, y_pos)
+        label.set_pos_hint(pos)
 
         self.animate_and_remove_label(label, {FADE_IN: 0, STAY: data["animation"][STAY], FADE_OUT: data["animation"][FADE_OUT]})
 
