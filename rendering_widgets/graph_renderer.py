@@ -47,11 +47,14 @@ class GraphRenderer(Widget):
 
     def add_data(self, values):
         if not self.ready:
-            pass
+            return
 
         if len(values) is 0 and not self.hidden:
             self.hide_graphs()
         else:
+            if len(values) is not 3:
+                return
+                
             if self.hidden:
                 self.show_graphs()
 
@@ -87,9 +90,6 @@ class GraphRenderer(Widget):
         self.counter = 0
 
     def extend_plot_range_if_needed(self, values):
-        if len(values) is not 3:
-            return
-
         for i in range(0, len(self.graphs)):
             graph = self.graphs[i]
             if graph.ymin > values[i]:
