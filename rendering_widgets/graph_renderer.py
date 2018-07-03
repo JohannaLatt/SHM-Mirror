@@ -87,6 +87,9 @@ class GraphRenderer(Widget):
         self.counter = 0
 
     def extend_plot_range_if_needed(self, values):
+        if len(values) is not 3:
+            return
+
         for i in range(0, len(self.graphs)):
             graph = self.graphs[i]
             if graph.ymin > values[i]:
