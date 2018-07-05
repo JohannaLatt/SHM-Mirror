@@ -11,7 +11,11 @@ class AnimatedLabel(Label):
         kwargs["font_size"] = kwargs["font_size"] * (((Window.width / 1700) + 0.2) + ((Window.height / 900) * .1))
 
         super().__init__(**kwargs)
-        self.size_hint = (0, 0)
+
+        if kwargs["size_hint"] == (1, 1):  # Static text --> make it fullscreen so we can use halign
+            self.bind(texture_size=self.setter('size'))
+            self.text_size = Window.size[0], 0
+
         self.opacity = 0
         self.bold = True
         self.text_id = None

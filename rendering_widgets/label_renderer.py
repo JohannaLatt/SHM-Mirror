@@ -26,6 +26,8 @@ class LabelRenderer():
 
         if "font_size" not in data:
             data["font_size"] = 40
+        if "halign" not in data:
+            data["halign"] = "left"
         if "position" not in data:
             data["position"] = {"x": 0.5, "y": 0.9}
         if "color" not in data:
@@ -67,6 +69,12 @@ class LabelRenderer():
                 x_pos += 0.015
             data["position"] = {"x": x_pos, "y": y_pos}
 
+            # We do NOT want the text bounding box to extend to the whole screen
+            data["size_hint"] = (0, 0)
+        else:
+            # We do want the text bounding box to extend to the whole screen
+            data["size_hint"] = (1, 1)
+
         # Check if there is an ID being sent, ie the label might exist already
         if "id" in data:
             # Label exists already
@@ -76,7 +84,7 @@ class LabelRenderer():
 
             # We need a new label and save a reference to it via the ID
             else:
-                label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"])
+                label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"], size_hint=data["size_hint"], halign=data["halign"])
                 label.set_id(data["id"])
                 self.static_labels[data["id"]] = label
                 self.root.add_widget(label)
@@ -84,7 +92,7 @@ class LabelRenderer():
 
         # We need a new label that we do not need to save for later reference
         else:
-            label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"])
+            label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"], size_hint=data["size_hint"], halign=data["halign"])
             self.root.add_widget(label)
             self.animate_and_remove_label(label, {FADE_IN: data["animation"][FADE_IN], STAY: data["animation"][STAY], FADE_OUT: data["animation"][FADE_OUT]})
 
