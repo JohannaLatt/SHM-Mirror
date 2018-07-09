@@ -64,9 +64,9 @@ class LabelRenderer():
 
             # Slighlt adjust the text to the left or right so it's visible
             if "Left" in data["position"]:
-                x_pos -= 0.015
+                x_pos -= 0.024
             else:
-                x_pos += 0.015
+                x_pos += 0.024
             data["position"] = {"x": x_pos, "y": y_pos}
 
             # We do NOT want the text bounding box to extend to the whole screen
@@ -115,18 +115,7 @@ class LabelRenderer():
 
             # Remove reference to the label
             if label.get_id() in self.static_labels:
-                self.delete_all_labels_with_id(label.get_id())
+                #self.delete_all_labels_with_id(label.get_id())
                 del self.static_labels[label.get_id()]
 
-
         label.fade_in_and_out(animation_data[FADE_IN], animation_data[STAY], animation_data[FADE_OUT], remove_label)
-
-    # For some reason, the remove_label callback is sometimes called for old
-    # instances of a label which means the new instance doesn't actually get
-    # deleted and stays on the screen. This helper makes sure that any
-    # instance with a certain ID gets deleted, even if it is not referenced
-    # in the static_labels-dict anymore
-    def delete_all_labels_with_id(self, id):
-        for w in self.root.children:
-            if isinstance(w, AnimatedLabel) and w.get_id() == id:
-                self.root.remove_widget(w)

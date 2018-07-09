@@ -20,6 +20,8 @@ class AnimatedLabel(Label):
         self.bold = True
         self.text_id = None
 
+        self.clock_event = None
+
     def set_pos(self, x, y):
         self.pos = (x, y)
 
@@ -49,16 +51,12 @@ class AnimatedLabel(Label):
         self.opacity = 0
 
     def fade_in(self, time=1, start=True):
-        self.cancel_animations()
-
         self.anim_in = Animation(opacity=1.0, duration=time)
         if start:
             self.anim_in.start(self)
         return self.anim_in
 
     def fade_out(self, time=1, start=True, cb=lambda x, y: True):
-        self.cancel_animations()
-
         self.anim_out = Animation(opacity=0.0, duration=time)
         self.anim_out.bind(on_complete=cb)
         if start:
@@ -80,13 +78,15 @@ class AnimatedLabel(Label):
             self.anim_out.bind(on_complete=cb)
             self.anim_out.start(self)
 
-        self.anim_in.bind(
-            on_complete=Clock.schedule_once(
-                partial(fade_out_and_notify, time_out, cb), stay))
+        self.clock_event = Clock.schedule_once(
+            partial(fade_out_and_notify, time_out, cb), stay)
+        self.anim_in.bind(on_complete=self.clock_event)
         self.anim_in.start(self)
 
     def cancel_animations(self):
         Animation.cancel_all(self)
+        if self.clock_event is not None:
+            self.clock_event.cancel()
 
     def get_left_x(self):
         return self.center_x - self.texture_size[0] * 0.5
