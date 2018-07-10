@@ -2,6 +2,8 @@ from kivy.uix.widget import Widget
 from kivy.graphics import Line, Color, Ellipse
 from kivy.core.window import Window
 
+from collections import deque
+
 # Define coordinate system that skeleton data arrives in
 min_x = -1200  # based on window-width of 1700
 min_y = -1000  # based on window-height of 900
@@ -24,6 +26,7 @@ class SkeletonWidget(Widget):
         self.default_joint_color = (0, 0, 0.4, 0.8)
 
         # Adapt the coordinate system according to the screen size
+        self.last_foot_y_min = deque(maxlen=5)
         self.min_x = min_x * (Window.size[0] / 1700)
         self.min_y = min_y * (Window.size[1] / 900)
         self.max_x = max_x * (Window.size[0] / 1700)
@@ -36,6 +39,11 @@ class SkeletonWidget(Widget):
         # Prepare the data
         self.joints = data['Joints']
         self.bones = data['Bones']
+
+        # Save lowest foot position
+        lowest_foot_position = min(self.joints['FootRight'][1], self.joints['FootLeft'][1])
+        self.last_foot_y_min.append(lowest_foot_position)
+        self.adjust_bottom_of_screen()
 
         # Scale the joint coordinates to screen coordinates
         for joint, joint_position in self.joints.items():
@@ -126,6 +134,10 @@ class SkeletonWidget(Widget):
 
     def rescale_joint_x_pos(self, x):
         return ((x - self.min_x) / (self.max_x - self.min_x)) * self.width
+
+    def adjust_bottom_of_screen(self):
+        if len(self.last_foot_y_min) == self.last_foot_y_min.maxlen:
+            self.min_y = min(self.last_foot_y_min)
 
     def rescale_joint_y_pos(self, y):
         return ((y - self.min_y) / (self.max_y - self.min_y)) * self.height
