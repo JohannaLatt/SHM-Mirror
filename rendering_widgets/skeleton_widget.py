@@ -3,9 +3,9 @@ from kivy.graphics import Line, Color, Ellipse
 from kivy.core.window import Window
 
 # Define coordinate system that skeleton data arrives in
-min_x = -1500  # based on window-width of 1700
+min_x = -1200  # based on window-width of 1700
 min_y = -1000  # based on window-height of 900
-max_x = 2500
+max_x = 2200
 max_y = 1000
 
 
@@ -20,8 +20,8 @@ class SkeletonWidget(Widget):
 
         self.line_width = 3
         self.circle_diameter = 18
-        self.default_bone_color = (0, 0, 1, 0.7)
-        self.default_joint_color = (0, 1, 1, 0.7)
+        self.default_bone_color = (0, 0, 1, 0.9)
+        self.default_joint_color = (0, 0, 0.4, 0.8)
 
         # Adapt the coordinate system according to the screen size
         self.min_x = min_x * (Window.size[0] / 1700)
