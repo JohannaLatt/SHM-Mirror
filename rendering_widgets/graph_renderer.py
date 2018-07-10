@@ -12,10 +12,11 @@ class GraphRenderer(Widget):
         # By default, there are three graphs available
         self.graphs = [None, None, None]
         self.standard_graph_size = (.3, .15)
+        self.standard_graph_size_labelled = (.312, .2105)
 
-        self.graphs[0] = self.create_basic_graph('X', 0, 600, size_hint=self.standard_graph_size, pos_hint={"top": .98, "left": 1})
-        self.graphs[1] = self.create_basic_graph('Y', -600, 200, size_hint=self.standard_graph_size, pos_hint={"top": .83, "left": 1})
-        self.graphs[2] = self.create_basic_graph('Z', 1500, 2500, size_hint=self.standard_graph_size, pos_hint={"top": .68, "left": 1})
+        self.graphs[0] = self.create_basic_graph('X', 0, 600, size_hint=self.standard_graph_size, pos_hint={"top": .98, "left": 1}, x_grid_label=False, xlabel='')
+        self.graphs[1] = self.create_basic_graph('Y', -600, 200, size_hint=self.standard_graph_size, pos_hint={"top": .845, "left": 1}, x_grid_label=False, xlabel='')
+        self.graphs[2] = self.create_basic_graph('Z', 1500, 2500, size_hint=self.standard_graph_size_labelled, pos_hint={"top": .71, "left": 1})
 
         # Each graph has one plot
         self.plots = [None, None, None]
@@ -38,11 +39,11 @@ class GraphRenderer(Widget):
         self.hide_graphs()
         self.ready = True
 
-    def create_basic_graph(self, y_label, y_min, y_max, size_hint, pos_hint):
+    def create_basic_graph(self, y_label, y_min, y_max, size_hint, pos_hint, x_grid_label=True, xlabel='frames'):
         return Graph(size_hint=size_hint, pos_hint=pos_hint,
-            xlabel='frames', ylabel=y_label, x_ticks_minor=3,
+            xlabel=xlabel, ylabel=y_label, x_ticks_minor=3,
             x_ticks_major=50, y_ticks_major=100,
-            y_grid_label=True, x_grid_label=True, padding=5,
+            y_grid_label=True, x_grid_label=x_grid_label, padding=5,
             x_grid=False, y_grid=False, xmin=0, xmax=100, ymin=y_min, ymax=y_max)
 
     def add_data(self, values):
@@ -54,7 +55,7 @@ class GraphRenderer(Widget):
         else:
             if len(values) is not 3:
                 return
-                
+
             if self.hidden:
                 self.show_graphs()
 
