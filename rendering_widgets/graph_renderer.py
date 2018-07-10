@@ -1,6 +1,7 @@
 from kivy.garden.graph import Graph, SmoothLinePlot
 from kivy.uix.widget import Widget
 
+from collections import deque
 
 class GraphRenderer(Widget):
 
@@ -8,6 +9,8 @@ class GraphRenderer(Widget):
         # max number of points in a graph
         self.counter = 0
         self.max_points = 100
+
+        self.values =  [deque(maxlen=self.max_points), deque(maxlen=self.max_points), deque(maxlen=self.max_points)]
 
         # By default, there are three graphs available
         self.graphs = [None, None, None]
@@ -43,7 +46,7 @@ class GraphRenderer(Widget):
         return Graph(size_hint=size_hint, pos_hint=pos_hint,
             xlabel=xlabel, ylabel=y_label, x_ticks_minor=3,
             x_ticks_major=50, y_ticks_major=100,
-            y_grid_label=True, x_grid_label=x_grid_label, padding=5,
+            y_grid_label=False, x_grid_label=x_grid_label, padding=5,
             x_grid=False, y_grid=False, xmin=0, xmax=100, ymin=y_min, ymax=y_max)
 
     def add_data(self, values):
@@ -66,11 +69,14 @@ class GraphRenderer(Widget):
                     plot.points = map(lambda point: (point[0] - 1, point[1]), plot.points)
                 self.counter = 99
 
-            # print(self.plots[0].points)
-            self.extend_plot_range_if_needed(values)
             self.plots[0].points.append((self.counter, values[0]))
+            self.values[0].append(values[0])
             self.plots[1].points.append((self.counter, values[1]))
+            self.values[1].append(values[1])
             self.plots[2].points.append((self.counter, values[2]))
+            self.values[2].append(values[2])
+
+            self.adjust_plot_range_if_needed()
             self.counter += 1
 
     def show_graphs(self):
@@ -88,12 +94,31 @@ class GraphRenderer(Widget):
         self.plots[0].points = [(0, 0)]
         self.plots[1].points = [(0, 0)]
         self.plots[2].points = [(0, 0)]
+
+        self.values[0].clear()
+        self.values[1].clear()
+        self.values[2].clear()
+
         self.counter = 0
 
-    def extend_plot_range_if_needed(self, values):
+    def adjust_plot_range_if_needed(self):
+        # Set initial graph axes
+        if self.counter == 0:
+            for i in range(0, len(self.graphs)):
+                graph = self.graphs[i]
+                values = self.values[i]
+                graph.ymin = values[0]- 100
+                graph.ymax = values[0] + 100
+
+        # Make sure values never exceed axes
         for i in range(0, len(self.graphs)):
             graph = self.graphs[i]
-            if graph.ymin > values[i]:
-                graph.ymin = values[i] - 20
-            if graph.ymax < values[i]:
-                graph.ymax = values[i] + 20
+            values = self.values[i]
+
+            minimum = min(values) - 40
+            maximum = max(values) + 40
+
+            if graph.ymin > minimum:
+                graph.ymin = minimum
+            if graph.ymax < maximum:
+                graph.ymax = maximum
