@@ -5,10 +5,10 @@ from kivy.core.window import Window
 from collections import deque
 
 # Define coordinate system that skeleton data arrives in
-min_x = -1200  # based on window-width of 1700
-min_y = -1000  # based on window-height of 900
-max_x = 2200
-max_y = 1000
+min_x = -1500  # based on window-width of 1700
+min_y = -1500  # based on window-height of 900
+max_x = 1500
+max_y = 1500
 
 
 class SkeletonWidget(Widget):
