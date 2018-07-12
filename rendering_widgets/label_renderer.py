@@ -115,7 +115,6 @@ class LabelRenderer():
 
             # Remove reference to the label
             if label.get_id() in self.static_labels:
-                #self.delete_all_labels_with_id(label.get_id())
                 del self.static_labels[label.get_id()]
 
         label.fade_in_and_out(animation_data[FADE_IN], animation_data[STAY], animation_data[FADE_OUT], remove_label)
