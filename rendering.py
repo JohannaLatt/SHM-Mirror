@@ -25,7 +25,7 @@ def init_gui(Messaging):
 
     # Make sure that the chosen GUIBase implements the AbstractGUIBase-interface
     if not issubclass(type(gui), AbstractGUIBase):
-        print("[Error][Rendering] The chosen GUIBase in the config-file does not implement the AbstractGUIBase - aborting")
+        print("\033[91m[Error][Rendering] The chosen GUIBase in the config-file does not implement the AbstractGUIBase - aborting\033[91m")
     else:
         Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_READY.name, '')
         gui.run()
