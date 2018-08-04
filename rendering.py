@@ -1,4 +1,6 @@
 from utils.enums import MSG_TO_MIRROR_KEYS, MSG_FROM_MIRROR_KEYS
+from rendering_widgets.abstract_gui_base import AbstractGUIBase
+
 
 import configparser
 import json
@@ -15,14 +17,14 @@ def init_gui(Messaging):
     gui_base_path = Config.get('GUIBase', 'path_name').strip()
     gui_base_class = Config.get('GUIBase', 'class_name').strip()
 
-    gui_base_module = importlib.import_module(gui_base_path, package='Server')
+    gui_base_module = importlib.import_module(gui_base_path)
     class_ = getattr(gui_base_module, gui_base_class)
 
     global gui
     gui = class_()
 
     # Make sure that the chosen GUIBase implements the AbstractGUIBase-interface
-    if not typeof(gui).IsSubclassOf(typeof(AbstractGUIBase)):
+    if not issubclass(type(gui), AbstractGUIBase):
         print("[Error][Rendering] The chosen GUIBase in the config-file does not implement the AbstractGUIBase - aborting")
     else:
         Messaging.send(MSG_FROM_MIRROR_KEYS.MIRROR_READY.name, '')

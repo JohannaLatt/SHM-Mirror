@@ -1,5 +1,7 @@
 from kivy.config import Config
 
+from ..abstract_gui_base import AbstractGUIBase
+
 Config.set('graphics', 'window_state', 'maximized')
 #Config.set('graphics', 'fullscreen', 'auto')
 Config.set('graphics', 'width', '1400')
@@ -11,12 +13,12 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.core.window import Window
 
-from rendering_widgets.skeleton_widget import SkeletonWidget
-from rendering_widgets.label_renderer import LabelRenderer
-from rendering_widgets.graph_renderer import GraphRenderer
+from .skeleton_widget import SkeletonWidget
+from .label_renderer import LabelRenderer
+from .graph_renderer import GraphRenderer
 
 
-class GUIBase(App):
+class KivyGUIBase(AbstractGUIBase, App):
 
     # Init (called by kivy)
     def build(self):

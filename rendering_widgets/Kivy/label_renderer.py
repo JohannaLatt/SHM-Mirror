@@ -1,4 +1,4 @@
-from rendering_widgets.animated_label import AnimatedLabel
+from .animated_label import AnimatedLabel
 
 # ANIMATION
 FADE_IN = "fade_in"
