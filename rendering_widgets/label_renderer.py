@@ -16,7 +16,7 @@ class LabelRenderer():
         self.skeleton_widget = gui_base.skeleton_widget
 
         # Dict to store reused labels
-        self.static_labels = {}
+        self.existing_labels = {}
 
     def check_text_arguments(self, data):
         if "text" not in data:
@@ -78,15 +78,15 @@ class LabelRenderer():
         # Check if there is an ID being sent, ie the label might exist already
         if "id" in data:
             # Label exists already
-            if data["id"] in self.static_labels:
-                label = self.static_labels[data["id"]]
+            if data["id"] in self.existing_labels:
+                label = self.existing_labels[data["id"]]
                 self.update_existing_label(label, data, data["position"])
 
             # We need a new label and save a reference to it via the ID
             else:
                 label = AnimatedLabel(text=data["text"], pos_hint=data["position"], color=data["color"], font_size=data["font_size"], size_hint=data["size_hint"], halign=data["halign"])
                 label.set_id(data["id"])
-                self.static_labels[data["id"]] = label
+                self.existing_labels[data["id"]] = label
                 self.root.add_widget(label)
                 self.animate_and_remove_label(label, {FADE_IN: data["animation"][FADE_IN], STAY: data["animation"][STAY], FADE_OUT: data["animation"][FADE_OUT]})
 
@@ -114,7 +114,7 @@ class LabelRenderer():
             self.root.remove_widget(label)
 
             # Remove reference to the label
-            if label.get_id() in self.static_labels:
-                del self.static_labels[label.get_id()]
+            if label.get_id() in self.existing_labels:
+                del self.existing_labels[label.get_id()]
 
         label.fade_in_and_out(animation_data[FADE_IN], animation_data[STAY], animation_data[FADE_OUT], remove_label)
