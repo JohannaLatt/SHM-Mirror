@@ -31,7 +31,7 @@ def init(Rendering):
 
     # Create an exchange for the mirror-messages - type is direct so we can distinguish the different messages
     __channel.exchange.declare(exchange='from-mirror', exchange_type='direct')
-    __channel.exchange.declare(exchange='to-mirror', exchange_type='direct')
+    __channel.exchange.declare(exchange='from-server', exchange_type='direct')
 
     # Declare a queue to be used (random name will be used)
     result = __channel.queue.declare(exclusive=True)
@@ -39,7 +39,7 @@ def init(Rendering):
 
     # Listen to server messages
     for msg_keys in MSG_TO_MIRROR_KEYS:
-        __channel.queue.bind(exchange='to-mirror',
+        __channel.queue.bind(exchange='from-server',
                            queue=queue_name,
                            routing_key=msg_keys.name)
 
